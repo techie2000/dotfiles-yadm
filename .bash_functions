@@ -1,15 +1,61 @@
+# shellcheck shell=bash
+
 echo "**** $HOME/.bash_functions **** starts ****"
 
-RSYNC_SKIP_COMPRESS=3g2/3gp/3gpp/3mf/7z/aac/ace/amr/apk/appx/appxbundle/arc/arj/asf/avi/br/bz2/cab/crypt5/crypt7/crypt8/deb/dmg/drc/ear/gz/flac/flv/gpg/h264/h265/heif/iso/jar/jp2/jpg/jpeg/lz/lz4/lzma/lzo/m4a/m4p/m4v/mkv/msi/mov/mp3/mp4/mpeg/mpg/mpv/oga/ogg/ogv/opus/pack/png/qt/rar/rpm/rzip/s7z/sfx/svgz/tbz/tgz/tlz/txz/vob/webm/webp/wim/wma/wmv/xz/z/zip/zst
-#unalias -a
+# to do: add function_installed+ to function definitions where it is missing (imports from older machines) 
 
+# shellcheck source=./scripts/cecho.sh
+# to do: bring this in from another box
+# source "${BASH_SOURCE[0]%/*}/scripts/cecho.sh"  # colourful echo
+
+# define variables here so the code below looks/feels neater and more manageable
+RSYNC_SKIP_COMPRESS=3g2/3gp/3gpp/3mf/7z/aac/ace/amr/apk/appx/appxbundle/arc/arj/asf/avi/br/bz2/cab/crypt5/crypt7/crypt8/deb/dmg/drc/ear/gz/flac/flv/gpg/h264/h265/heif/iso/jar/jp2/jpg/jpeg/lz/lz4/lzma/lzo/m4a/m4p/m4v/mkv/msi/mov/mp3/mp4/mpeg/mpg/mpv/oga/ogg/ogv/opus/pack/png/qt/rar/rpm/rzip/s7z/sfx/svgz/tbz/tgz/tlz/txz/vob/webm/webp/wim/wma/wmv/xz/z/zip/zst
+
+# keep track of what aliases and functiones we are defining so they can be detailed to the user at the end
 alias_installed=()
 function_installed=()
 
 # check if a package is installed
+# this is called by other functions below hence why it is not in alphabetical order
 isPackageInstalled () {
         type "$1" &> /dev/null ;
 }
+
+#to do : once cecho is enabled, we can (re)introduce this code block
+#backup() {
+#    D=$(date +%Y-%m-%d-%H-%M-%S)
+#    cp "$@" "$*"-"$D".bk
+#    cecho -info "INFO: " -variable "$@" -info " copied to " -variable "$*-$D.bk"
+#}
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# unp hadles 'all' extracts, else setup syntax for common formats
+#if command -v unp >/dev/null 2>&1; then
+#   alias extract='unp'
+#else
+#   function extract () {
+#        for archive in "$@"; do
+#                if [ -f "$archive" ] ; then
+#                        case "$archive" in
+#                                *.tar.bz2)   tar        xvjf "$archive" ;;
+#                                *.tar.gz)    tar        xvzf "$archive" ;;
+#                                *.bz2)       bunzip2         "$archive" ;;
+#                                *.rar)       rar        x    "$archive" ;;
+#                                *.gz)        gunzip          "$archive" ;;
+#                                *.tar)       tar        xvf  "$archive" ;;
+#                                *.tbz2)      tar        xvjf "$archive" ;;
+#                                *.tgz)       tar        xvzf "$archive" ;;
+#                                *.zip)       unzip           "$archive" ;;
+#                                *.Z)         uncompress      "$archive" ;;
+#                                *.7z)        7z         x    "$archive" ;;
+#                                *)           cecho -error "ERROR: " -info "I don't know how to extract " -variable "$archive" ;;
+#                        esac
+#                else
+#                        cecho -error "ERROR: " -variable "$archive" -info " is not a valid file!"
+#                fi
+#        done
+#   }
+#fi
 
 # Options as of v1.0.8
 #   -h --help           print this message
@@ -108,7 +154,19 @@ cdls() {
 
 }
 function_installed+=("cdls : cd into a directory and list it's contents")
-
+# to do : once cecho is installed, replace original function above with this
+# cd followed by ls
+#cdls() {
+#    DIR="$*"
+#    # if no DIR given, go home
+#    if [ $# -lt 1 ]; then
+#        DIR=$HOME
+#        cecho -warning "\nWARNING: " -info "You did not specify a directory for " -variable "${FUNCNAME[0]}" -info " so a default of " -variable "$DIR" -info " has been used.\n"
+#    fi
+#    builtin cd "${DIR}" &&
+#    # use your preferred ls command command here. Consider configuring it as an alias to avoid touching this code
+#    ls
+#}
 
 # Options (as of v3.2.3)
 # --verbose, -v            increase verbosity
@@ -392,6 +450,14 @@ findi() {
 }
 function_installed+=("findi : find a file by its inum")
 
+# find the largest files in a directory
+# du options :
+#  --human-readable  : print sizes in human readable format (e.g., 1K 234M 2G)
+#  --one-file-system : skip directories on different file systems
+#  --summarize       : display only a total for each argument
+function find_largest_files() {
+    \du --human-readable --one-file-system --summarize ./* | sort -r -h | head -20
+}
 
 # find a file by its name
 findn() {
@@ -503,6 +569,130 @@ f_iftop() {
 
 }
 f_iftop
+
+
+# generate a random GUID
+if command -v curl >/dev/null 2>&1; then
+    generate_guid() {
+        curl givemeguid.com
+    }
+fi
+
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# generate a random number
+#if command -v curl >/dev/null 2>&1; then
+#    generate_random_number() {
+#        cecho -info "Generating a random integer between " -variable "1" -info " and " -variable "1000"
+#        curl "https://www.random.org/integers/?num=1&min=1&max=1000&col=1&base=10&format=plain&rnd=new"
+#    }
+#fi
+
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# show animated gif in the terminal
+#if command -v curl >/dev/null 2>&1; then
+#    get_animated_gif() {
+#        SEARCHTERM=$1
+#        if [ -z "$SEARCHTERM" ]; then
+#            cecho -warning "\nWARNING: " -info "You did not supply a search term so a sample of " -variable "penguin" -info " was used."
+#            curl gif.xyzzy.run/penguin
+#        else
+#            curlgif.xyzzy.run/"$SEARCHTERM"
+#       fi
+#    }
+#fi
+
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# show crypto
+#if command -v curl >/dev/null 2>&1; then
+#    get_crypto() {
+#        CURRENCY=$1
+#        if [ -z "$CURRENCY" ]; then
+#            curl rate.sx
+#            cecho -warning "\nWARNING: " -info "You did not specify a currency for " -variable "${FUNCNAME[0]}" -info " so by default you get the top 10 currencies.\n"
+#            cecho -info "If you specify a currency (e.g. BTC, ETH, XRP, DOGE), you will see a graph of recent movements in that currency's valuation.\n"
+#        else
+#            curl rate.sx/"$CURRENCY"
+#            curl rate.sx
+#        fi
+#    }
+#fi
+
+
+# tell me a dad joke
+if command -v curl >/dev/null 2>&1; then
+    get_joke() {
+        curl https://icanhazdadjoke.com
+    }
+fi
+
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# Get the news on given topic (term)
+#if command -v curl >/dev/null 2>&1; then
+#    get_news() {
+#        TERM=$1
+#        if [ -z "$TERM" ]; then
+#            curl gb.getnews.tech
+#            cecho -warning "WARNING: " -info "You did not specify a search term for " -variable "${FUNCNAME[0]}" -info " to show, so a generic default has been applied.\n"
+#            cecho -info "example search terms: " -purple "trump" -info " or " -purple "category={business|entertainment|general|health|acience|sports│technology}" -info " or " -purple "mass+shooting\n"
+#            cecho -info "You can restrict the number of articles to say 5 by adding " -purple ",n=5" -info "to your search term.\n"
+#        else
+#            curl gb.getnews.tech/"$TERM"
+#        fi
+#    }
+#fi
+
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# get stock price for supplied ticker
+#if command -v curl >/dev/null 2>&1; then
+#    get_stock_price() {
+#        TICKER=$1
+#        if [ -z "$TICKER" ]; then
+#            TICKER=MSFT
+#            curl terminal-stocks.shashi.dev/"$TICKER"
+#            cecho -warning "WARNING: " -info "You did not specify a ticker for " -variable "${FUNCNAME[0]}" -info " to show, so a generic default of " -variable "$TICKER" -info " has been used for demo purposes.\n"
+#        else
+#             curl terminal-stocks.shashi.dev/"$TICKER"
+#        fi
+#    }
+#fi
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# get stock price for supplied ticker
+#if command -v curl >/dev/null 2>&1; then
+#    get_stock_price_history() {
+#        TICKER=$1
+#        if [ -z "$TICKER" ]; then
+#            TICKER=MSFT
+#            curl terminal-stocks.shashi.dev/historical/"$TICKER"
+#            cecho -warning "WARNING: " -info "You did not specify a ticker for " -variable "${FUNCNAME[0]}" -info " to show, so a generic default of " -variable "$TICKER" -info " has been used for demo purposes.\n"
+#        else
+#             curl terminal-stocks.shashi.dev/historical/"$TICKER"
+#        fi
+#    }
+#fi
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# show 3 day weather forecast (shows London by default)
+#if command -v curl >/dev/null 2>&1; then
+#    get_weather() {
+#        LOCATION=$1
+#        if [ -z "$LOCATION" ]; then
+#            LOCATION=London
+#            curl wttr.in/"$LOCATION"?u
+#            cecho -info "INFO: You did not specify a location parameter for " -variable "${FUNCNAME[0]}" -info " so " -variable "$LOCATION" -info " has been shown by default\n"
+#            cecho -info "You can get a larger orerview of current conditions at " -variable "https://v3.wttr.in/$LOCATION\n"
+#        else
+#            curl wttr.in/"$LOCATION"?u
+#        fi
+#        curl wttr.in/Moon
+#        cecho -info "\nINFO: You can get a larger orerview of current conditions at " -variable "https://v3.wttr.in/$LOCATION\n"
+#    }
+#fi
 
 
 # Show cpu utilisation
@@ -848,8 +1038,115 @@ f_mvDryRun() {
 f_mvDryRun
 
 
+# to do : once cecho is installed, we can (re)introduce this code block
+# Initialise a new git project
+#git_init() {
+#    if [ -z "$1" ]; then
+#        cecho -error "ERROR: " -info "You did not specify a directory name for " -variable "${FUNCNAME[0]}" -info " No action has been taken.\n"
+#    else
+#        mkdir "$1"
+#        builtin cd "$1" || exit
+#        pwd
+#        git init
+#        touch readme.md .gitignore LICENSE
+#        echo "# $(basename "$PWD")" >>readme.md
+#    fi
+#}
+
+
 # add f_ps that will use procs --color=always --sortd cpu --theme=auto --watch if procs is installed
 #
+
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# Make a new directory and cd into it.
+#mkcd() {
+#    if [ -z "$1" ]; then
+#        cecho -error "ERROR: " -info "You did not specify a directory name for " -variable "${FUNCNAME[0]}" -info " to create. No action has been taken.\n"
+#    else
+#        NAME=$1
+#        mkdir -p "$NAME"
+#        cd "$NAME" || exit
+#    fi
+
+
+#to do: should really move this in to .bash_aliases as it is only a function to setup an alias conditionally
+# run neofetch to show local system details
+if command -v curl >/dev/null 2>&1; then
+    if command -v bash >/dev/null 2>&1; then
+        neofetch() {
+            curl -s curl -sL https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch | bash
+        }
+    fi
+fi
+
+
+# ps with grep
+psg() {
+    # shellcheck disable=SC2009
+    ps auxf | grep "$1"
+}
+
+
+# run a speedtest to test your internet connection
+if command -v curl >/dev/null 2>&1; then
+    if command -v python >/dev/null 2>&1; then
+        run_speedtest() {
+            curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -
+        }
+    fi
+fi
+
+
+# show rickroll :)
+if command -v curl >/dev/null 2>&1; then
+    if command -v bash >/dev/null 2>&1; then
+        run_rickroll() {
+            curl -sL https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash
+        }
+    fi
+fi
+
+# show Forrest Gump style animation in the terminal
+if command -v curl >/dev/null 2>&1; then
+    show_forrest() {
+        curl ascii.live/forrest
+    }
+fi
+
+# show Star Wars in the terminal
+if command -v curl >/dev/null 2>&1; then
+    show_starwars() {
+        curl https://asciitv.fr
+    }
+fi
+
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# show top cpu consumers
+#show_top_cpu_consumers() {
+#    processes=$1
+#    if [ $# -lt 1 ]; then
+#        processes=10 # top 10 cpu processes
+#        cecho -warning "WARNING: " -info "You did not specify how many processes for " -variable "${FUNCNAME[0]}" -info " to show, so a default of " -variable $processes -info " has been applied.\n"
+#    fi
+#
+#    ps aux | sort -n +2 | tail -"$processes"
+#}
+
+
+# to do : once cecho is installed, we can (re)introduce this code block
+# show top memory consumers
+#show_top_memory_consumers() {
+#    processes=$1
+#    if [ $# -lt 1 ]; then
+#        processes=10 # top 10 cpu processes
+#        cecho -warning "WARNING: " -info "You did not specify how many processes for " -variable "${FUNCNAME[0]}" -info " to show, so a default of -variable " $processes -info " has been applied.\n"
+#    fi
+#
+#    ps aux | sort -n +3 | tail -"$processes"
+#}
+
 
 sysinfo() {
 
@@ -895,6 +1192,54 @@ up () {
 }
 
 
+# to do : once cecho is installed, we can (re)introduce this code block
+# Updates
+#update () {
+#    if [[ $(DISTRO) == *"Ubuntu"* ]]; then
+#        cecho -info "INFO: Updating available software\n----"
+#        sudo apt-get update
+#        cecho -info "\nINFO: Upgrading software\n----"
+#        sudo apt-get -y upgrade
+#        cecho -info "\nINFO: Removing obsolete dependency software\n----"
+#        sudo apt-get -y autoremove
+#        cecho -info "\nINFO: Removing software in local cache\n----"
+#        sudo apt-get clean
+#        cecho -success "SUCCESS: Update/Upgrade done"
+#    elif [[ $(DISTRO) == *"Fedora"* ]]; then
+#        cecho -info "INFO: Updating available software\n----"
+#        sudo dnf upgrade
+#        cecho -info "\nINFO: Removing obsolete dependency software\n----"
+#        sudo dnf autoremove
+#        cecho -info "\nINFO: Removing software in local cache\n----"
+#        sudo dnf clean all
+#       cecho -success "SUCCESS: Update/Upgrade done"
+#    elif [[ $(DISTRO) == *"Arch"* ]]; then
+#        cecho -info "INFO: Updating available software\n----"
+#        sudo pacman -Syy
+#        cecho -info "\nINFO: Upgrading software\n----"
+#        sudo pacman -Syu
+#        cecho -info "\nINFO: Removing obsolete dependency software\n----"
+#        pacman -Qtdq | pacman -Rns -
+#        cecho -success "SUCCESS: Update/Upgrade done"
+#    elif [[ $(IS_MAC) == "true"* ]]; then
+#        cecho -info "INFO: Upgrading software\n----"
+#        [[ $(command -v brew) ]] && brew upgrade
+#    else
+#        cecho -error "ERROR: " -variable "$DISTRO" -info " is not handled for automatic update/upgrade. Please update/upgrade manually"
+#    fi
+#}
+
+# backwards compatbility
+alias animated_gif='get_animated_gif'
+alias crpto='get_crypto'
+alias news_search='get_news'
+alias runforrest='show_run_forrest'
+alias starwars='show_starwars'
+alias weather='get_weather'
+alias topcpu='show_top_cpu_consumers'
+alias topmem='show_top_memory_consumers'
+
+
 echo "The following aliases were installed:"
 
 for element in "${alias_installed[@]}"
@@ -903,6 +1248,7 @@ do
 done
 
 echo "The following functions are made available:"
+
 for element in "${function_installed[@]}"
 do
     echo "$element"
