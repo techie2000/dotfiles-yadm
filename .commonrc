@@ -1,0 +1,139 @@
+# shellcheck shell=bash
+
+# Content for ~/.zshrc or ~/.bashrc files.
+# On macOS and Linux.
+
+emulate -LR sh 2>/dev/null
+
+####
+# OS checks
+####
+
+DISTRO=unknown
+MACHINE=unknown
+
+IS_CYGWIN=false
+IS_LINUX=false
+IS_MAC=false
+IS_UNKNOWN=true
+IS_WSL=false
+
+#   -s Print the kernel name (Linux) | print the operating system name. (macOS)
+case "$(uname -s)" in
+CYGWIN*)
+  IS_CYGWIN=true
+  IS_UNKNOWN=false
+  MACHINE=Cygwin
+  export IS_CYGWIN
+  export IS_UNKNOWN
+  export MACHINE
+  ;;
+Darwin*)
+  IS_MAC=true
+  IS_UNKNOWN=false
+  MACHINE=Mac
+  export IS_LINUX
+  export IS_UNKNOWN
+  export MACHINE
+  ;;
+Linux*)
+  IS_MAC=true
+  IS_UNKNOWN=false
+  MACHINE=Linux
+  export IS_MAC
+  export IS_UNKNOWN
+  export MACHINE
+  ;;
+*)
+  MACHINE="UNKNOWN:${DISTRO}"
+  export IS_UNKNOWN
+  export MACHINE
+esac
+
+if [[ $(cat /proc/version 2>/dev/null) =~ (M|m)icrosoft ]]; then
+    IS_WSL=true
+    export IS_WSL
+fi
+
+# Determine OS platform
+UNAME=$(uname | tr "[:upper:]" "[:lower:]")
+# If Linux, try to determine specific distribution
+if [ "$UNAME" == "linux" ]; then
+    # If available, use LSB to identify distribution
+    if [ -f /etc/lsb-release ] || [ -d /etc/lsb-release.d ]; then
+        DISTRO=$(lsb_release -i | cut -d: -f2 | sed s/'^\t'//)
+        export DISTRO
+    # Otherwise, use release info file
+    else
+        DISTRO=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1)
+        export DISTRO
+    fi
+fi
+# For everything else (or if above failed), just use generic identifier
+[ "$DISTRO" == "" ] && export DISTRO=$UNAME
+
+# Lifted from https://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/
+#
+# Read down the appropriate column. Executes A, then B, then C, etc. The B1, B2, B3 means it executes only the first of those files found.
+#
+# +----------------+-----------+-----------+------+
+# |                |Interactive|Interactive|Script|
+# |                |login      |non-login  |      |
+# +----------------+-----------+-----------+------+
+# |/etc/profile    |   A       |           |      |
+# +----------------+-----------+-----------+------+
+# |/etc/bash.bashrc|           |    A      |      |
+# +----------------+-----------+-----------+------+
+# |~/.bashrc       |           |    B      |      |
+# +----------------+-----------+-----------+------+
+# |~/.bash_profile |   B1      |           |      |
+# +----------------+-----------+-----------+------+
+# |~/.bash_login   |   B2      |           |      |
+# +----------------+-----------+-----------+------+
+# |~/.profile      |   B3      |           |      |
+# +----------------+-----------+-----------+------+
+# |BASH_ENV        |           |           |  A   |
+# +----------------+-----------+-----------+------+
+# |                |           |           |      |
+# +----------------+-----------+-----------+------+
+# |                |           |           |      |
+# +----------------+-----------+-----------+------+
+# |~/.bash_logout  |    C      |           |      |
+# +----------------+-----------+-----------+------+
+#
+# flowchart from http://www.solipsys.co.uk/new/BashInitialisationFiles.html
+#
+# For zsh: [Note that zsh seems to read ~/.profile as well, if ~/.zshrc is not present.]
+#
+# +----------------+-----------+-----------+------+
+# |                |Interactive|Interactive|Script|
+# |                |login      |non-login  |      |
+# +----------------+-----------+-----------+------+
+# |/etc/zshenv     |    A      |    A      |  A   |
+# +----------------+-----------+-----------+------+
+# |~/.zshenv       |    B      |    B      |  B   |
+# +----------------+-----------+-----------+------+
+# |/etc/zprofile   |    C      |           |      |
+# +----------------+-----------+-----------+------+
+# |~/.zprofile     |    D      |           |      |
+# +----------------+-----------+-----------+------+
+# |/etc/zshrc      |    E      |    C      |      |
+# +----------------+-----------+-----------+------+
+# |~/.zshrc        |    F      |    D      |      |
+# +----------------+-----------+-----------+------+
+# |/etc/zlogin     |    G      |           |      |
+# +----------------+-----------+-----------+------+
+# |~/.zlogin       |    H      |           |      |
+# +----------------+-----------+-----------+------+
+# |                |           |           |      |
+# +----------------+-----------+-----------+------+
+# |                |           |           |      |
+# +----------------+-----------+-----------+------+
+# |~/.zlogout      |    I      |           |      |
+# +----------------+-----------+-----------+------+
+# |/etc/zlogout    |    J      |           |      |
+# +----------------+-----------+-----------+------+
+# Moral:
+#   For bash, put stuff in ~/.bashrc, and make ~/.bash_profile source it.
+#   For zsh, put stuff in ~/.zshrc, which is always executed.
+
