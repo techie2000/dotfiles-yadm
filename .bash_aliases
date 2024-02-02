@@ -74,10 +74,30 @@ alias chown='chown --preserve-root'
 alias df="df --human-readable -k --print-type | sort -k 7"
 alias diff="colordiff --color=auto --report-identical-files --side-by-side"
 
+# grep option :
+#    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
 alias egrep='egrep --color=auto'
 
+# grep option :
+#    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
 alias fgrep='fgrep --color=auto'
 
+if command -v git >/dev/null 2>&1; then
+        alias gad='git add '
+        alias gbr='git branch '
+        alias gco='git commit'
+        alias gdi='git diff'
+        alias gik='gitk --all&'
+        alias gig='gitg &'
+        alias gch='git checkout '
+        alias gpu='git pull'
+        alias gst='git status'
+        alias got='git '          # typos
+        alias gut='git '          # typos
+fi
+
+# grep option :
+#    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
 alias grep='grep --color=auto'
 
 alias h='hist'
@@ -104,14 +124,52 @@ alias now='date +"%d-%m-%Y %T"'
 
 alias path='echo -e ${PATH//:/\\n}'
 
-alias rm='rm --recursive --force --interactive=once --preserve-root'
+# rm options:
+#    -f, --force          : ignore nonexistent files and arguments, never prompt
+#    -i                   : prompt before every removal
+#    -I                   : prompt once before removing more than three files, or
+#                             when removing recursively; less intrusive than -i,
+#                             while still giving protection against most mistakes
+#   -r, -R, --recursive   : remove directories and their contents recursively
+#   --interactive[=WHEN]  : prompt according to WHEN: never, once (-I), or always (-i); without WHEN, prompt always
+#   --preserve-root       : do not remove '/' (default)
+#   --verbose explain what is being done
+alias rm='rm --force --interactive=once --preserve-root --recursive'
 
 alias spacehogs='du -hsx * | sort -rh | head -10'
 alias syslog='tail -f /var/log/syslog'
 
 alias tailKernal='dmesg --color=always --time-format=iso --follow'
 
+if command -v tmux >/dev/null 2>&1; then
+  alias tmux='tmux -2'
+fi
+
+# Display the directory structure better.
+#   -A                     : Print ANSI lines graphic indentation lines
+#   -C                     : Turn colorization on always
+#   -F                     : Appends '/', '=', '*', '@', '|' or '>' as per ls -F
+#   -h                     : Print the size in a more human readable way
+#   --dirsfirst            : List directories before files (-U disables)
+alias tree='tree --dirsfirst -A -C -F -h'
+
+alias untar='tar --extract --file --verbose -z'
+
+if command -v vim >/dev/null 2>&1; then
+  alias vi='vim'
+fi
+if command -v nvim >/dev/null 2>&1; then
+  alias vim='nvim'
+  alias  vi='nvim'
+fi
+
 alias wget='wget -c'
+
+
+mkdir ~/.local/share/Trash
+alias trash='mv --force -t ~/.local/share/Trash '
+alias emptytrash='rm ~/.local/share/Trash/*'
+
 
 echo ""
 echo "**** $HOME/.bash_aliases **** ends ****"
