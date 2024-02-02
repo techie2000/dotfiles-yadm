@@ -459,7 +459,18 @@ function find_largest_files() {
     \du --human-readable --one-file-system --summarize ./* | sort -r -h | head -20
 }
 
-# find a file by its name
+# find a file by its inum
+findi() {
+	if [ $# eq 0 ]
+		then
+			echo "Please supply an inum"
+		else
+			find . -iname "$1"
+	fi
+}
+function_installed+=("findi : find a file by its inum")
+
+# find a file/directory by its name
 findn() {
         if [ $# -eq 0 ]
                 then
@@ -770,6 +781,20 @@ f_infoExternalIp() {
 
 }
 f_infoExternalIp
+
+
+# what's my internal IP addresses
+# f_infoInternalIp() {
+	FUNCTION_NAME="infoInternalIp";
+	REQUIRED_PKG="ifconfig";
+	PACKAGE_NAME="ifconfig"'
+
+	if isPackageInstalled "$REQUIRED_PKG"; then
+		unset -f "f_$FUNCTION_NAME";
+		alias "$FUNCTION_NAME"="$PACKAGE_NAME -a | grep -o 'inet6\? \(\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\)\|[a-fA-F0-9:]\+\)' | sed -e 's/inet6* //'";
+		alias_installed+=("$FUNCTION_NAME"="PACKAGE_NAME -a | grep -o 'inet6\? \(\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\)\|[a-fA-F0-9:]\+\)' | sed -e 's/inet6* //'");
+	fi
+}
 
 
 # identify the vendor for a given mac
