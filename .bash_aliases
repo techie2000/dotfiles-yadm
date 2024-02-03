@@ -87,8 +87,6 @@ if command -v git >/dev/null 2>&1; then
         alias gbr='git branch '
         alias gco='git commit'
         alias gdi='git diff'
-        alias gik='gitk --all&'
-        alias gig='gitg &'
         alias gch='git checkout '
         alias gpu='git pull'
         alias gst='git status'
@@ -164,6 +162,16 @@ if command -v nvim >/dev/null 2>&1; then
 fi
 
 alias wget='wget -c'
+
+
+if command -v yadm >/dev/null 2>&1; then
+	alias yad='git add '
+	alias ybr='git branch '
+	alias yco='git commit'
+	alias ydi='git diff'
+	alias ych='git checkout '                                                                                                                                                                                             1         	alias ypu='git pull'
+	alias yst='git status'
+fi
 
 
 mkdir ~/.local/share/Trash
