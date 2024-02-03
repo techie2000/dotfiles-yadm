@@ -165,12 +165,12 @@ alias wget='wget -c'
 
 
 if command -v yadm >/dev/null 2>&1; then
-	alias yad='git add '
-	alias ybr='git branch '
-	alias yco='git commit'
-	alias ydi='git diff'
-	alias ych='git checkout '                                                                                                                                                                                             1         	alias ypu='git pull'
-	alias yst='git status'
+	alias yad='yadm add '
+	alias ybr='yadm branch '
+	alias yco='yadm commit'
+	alias ydi='yadm diff'
+	alias ych='yadm checkout '                                                                                                                                                                                             1         	alias ypu='git pull'
+	alias yst='yadm status'
 fi
 
 
