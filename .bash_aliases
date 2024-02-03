@@ -63,9 +63,9 @@ alias bashfunctions='vi $HOME/.bash_functions && source $HOME/.bash_functions'
 alias calc="bc -l"
 alias countfiles=='find . -type f | wc -l'
 
-alias chgrp='chgrp --preserve-root'
-alias chmod='chmod --preserve-root'
-alias chown='chown --preserve-root'
+alias chgrp='chgrp --preserve-root' # safety net
+alias chmod='chmod --preserve-root' # safeyy net
+alias chown='chown --preserve-root' # safety net
 
 # df options:
 #   -h, --human-readable   : print sizes in powers of 1024 (e.g., 1023M)
