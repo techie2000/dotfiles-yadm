@@ -1,6 +1,6 @@
 # dotfiles-yadm
-<<<<<<< HEAD
-managing my dotfiles using yadm
-=======
-my dotfiles as managed by yadm
->>>>>>> da5ba53 (add a blank readme)
+
+source: https://github.com/techie2000/dotfiles-yadm
+
+My dotfiles as managed by yadm - https://yadm.io/
+
