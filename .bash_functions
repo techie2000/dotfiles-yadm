@@ -11,6 +11,9 @@ echo "**** $HOME/.bash_functions **** starts ****"
 # define variables here so the code below looks/feels neater and more manageable
 RSYNC_SKIP_COMPRESS=3g2/3gp/3gpp/3mf/7z/aac/ace/amr/apk/appx/appxbundle/arc/arj/asf/avi/br/bz2/cab/crypt5/crypt7/crypt8/deb/dmg/drc/ear/gz/flac/flv/gpg/h264/h265/heif/iso/jar/jp2/jpg/jpeg/lz/lz4/lzma/lzo/m4a/m4p/m4v/mkv/msi/mov/mp3/mp4/mpeg/mpg/mpv/oga/ogg/ogv/opus/pack/png/qt/rar/rpm/rzip/s7z/sfx/svgz/tbz/tgz/tlz/txz/vob/webm/webp/wim/wma/wmv/xz/z/zip/zst
 
+# Personalisation
+PERSONAL_calendar=true
+
 # keep track of what aliases and functiones we are defining so they can be detailed to the user at the end
 alias_installed=()
 function_installed=()
@@ -95,46 +98,50 @@ f_cal() {
     REQUIRED_PKG="ncal";
     PACKAGE_NAME="ncal";
 
-    if isPackageInstalled "$REQUIRED_PKG"; then
-        unset -f "f_$FUNCTION_NAME";
-        alias "$FUNCTION_NAME"="$PACKAGE_NAME -Mwy";
-        alias_installed+=("$FUNCTION_NAME"="$PACKAGE_NAME -Mwy");
+    if [[ "${PERSONAL_calendar}" == "true" ]] then
+        if isPackageInstalled "$REQUIRED_PKG"; then
+            unset -f "f_$FUNCTION_NAME";
+            alias "$FUNCTION_NAME"="$PACKAGE_NAME -Mwy";
+            alias_installed+=("$FUNCTION_NAME"="$PACKAGE_NAME -Mwy");
 
-        alias jan="$PACKAGE_NAME -m 01";
-        alias_installed+=("jan=$PACKAGE_NAME -m 01");
+            alias jan="$PACKAGE_NAME -m 01";
+            alias_installed+=("jan=$PACKAGE_NAME -m 01");
 
-        alias feb='ncal -m 02'
-        alias_installed+=("feb=$PACKAGE_NAME -m 02");
+            alias feb='ncal -m 02'
+            alias_installed+=("feb=$PACKAGE_NAME -m 02");
 
-        alias mar='ncal -m 03'
-        alias_installed+=("mar=$PACKAGE_NAME -m 02");
+            alias mar='ncal -m 03'
+            alias_installed+=("mar=$PACKAGE_NAME -m 02");
 
-        alias apr='ncal -m 04'
-        alias_installed+=("apr=$PACKAGE_NAME -m 02");
+            alias apr='ncal -m 04'
+            alias_installed+=("apr=$PACKAGE_NAME -m 02");
 
-        alias may='ncal -m 05'
-        alias_installed+=("may=$PACKAGE_NAME -m 02");
+            alias may='ncal -m 05'
+            alias_installed+=("may=$PACKAGE_NAME -m 02");
 
-        alias jun='ncal -m 06'
-        alias_installed+=("jun=$PACKAGE_NAME -m 02");
+            alias jun='ncal -m 06'
+            alias_installed+=("jun=$PACKAGE_NAME -m 02");
 
-        alias jul='ncal -m 07'
-        alias_installed+=("jul=$PACKAGE_NAME -m 02");
+            alias jul='ncal -m 07'
+            alias_installed+=("jul=$PACKAGE_NAME -m 02");
 
-        alias aug='ncal -m 08'
-        alias_installed+=("aug=$PACKAGE_NAME -m 02");
+            alias aug='ncal -m 08'
+            alias_installed+=("aug=$PACKAGE_NAME -m 02");
 
-        alias sep='ncal -m 09'
-        alias_installed+=("sep=$PACKAGE_NAME -m 02");
+            alias sep='ncal -m 09'
+            alias_installed+=("sep=$PACKAGE_NAME -m 02");
 
-        alias oct='ncal -m 10'
-        alias_installed+=("oct=$PACKAGE_NAME -m 02");
+            alias oct='ncal -m 10'
+            alias_installed+=("oct=$PACKAGE_NAME -m 02");
 
-        alias nov='ncal -m 11'
-        alias_installed+=("nov=$PACKAGE_NAME -m 02");
+            alias nov='ncal -m 11'
+            alias_installed+=("nov=$PACKAGE_NAME -m 02");
 
-        alias dec='ncal -m 12';  
-        alias_installed+=("dec=$PACKAGE_NAME -m 12");
+            alias dec='ncal -m 12';  
+            alias_installed+=("dec=$PACKAGE_NAME -m 12");
+        else
+            echo "cal is not installed :( Consider installing it!"
+        fi
     fi
 
 }
