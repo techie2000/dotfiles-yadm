@@ -4,6 +4,9 @@ echo ""
 echo "**** $HOME/.bash_aliases **** starts ****"
 echo ""
 
+# Personalisation
+PERSONAL_df=true
+
 # The following lines will see your `ls' output colorized
 export LS_OPTIONS='--color=auto'
 eval "$(dircolors)"
@@ -67,36 +70,60 @@ alias chgrp='chgrp --preserve-root' # safety net
 alias chmod='chmod --preserve-root' # safeyy net
 alias chown='chown --preserve-root' # safety net
 
+#to do: make m an n optional parameters of the call (i.e. move this to a function)
+# pidstat flags
+# run continously every m seconds (for n times)
+alias cpu='pidstat 5'
+
 # df options:
 #   -h, --human-readable   : print sizes in powers of 1024 (e.g., 1023M)
 #   -k                     : like --block-size=1K
 #   -T, --print-type       : print file system type
-alias df="df --human-readable -k --print-type | sort -k 7"
+if [[ "${PERSONAL_df}" == "true" ]]
+  then
+        alias df='df -k --human-readable --print-type | grep "disk[^s]\|cache\|shm\|user0\|log\|pool\|Mount" | sort -k 7'
+fi
+
+# to do: need to check that colordiff is installed and offer to install it if it isnt (and not set the alias idf it's not)
+# if it's not installed, alias this instead
+# alias diff='diff --color --side-by-side'
 alias diff="colordiff --color=auto --report-identical-files --side-by-side"
 
-# grep option :
-#    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
-alias egrep='egrep --color=auto'
+alias dut='df -hl --total | grep total' # total disk usage
 
-# grep option :
+# egrep option :
 #    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
-alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=always'
+
+# fgrep option :
+#    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
+alias fgrep='fgrep --color=always'
 
 if command -v git >/dev/null 2>&1; then
-        alias gad='git add '
-        alias gbr='git branch '
-        alias gco='git commit'
-        alias gdi='git diff'
-        alias gch='git checkout '
-        alias gpu='git pull'
-        alias gst='git status'
-        alias got='git '          # typos
-        alias gut='git '          # typos
+    alias  ga='gad'
+    alias gad='git add '
+    alias gbr='git branch '
+    alias gco='git commit'
+    alias  gc='gco'
+    alias  gd='gdi'
+    alias gdi='git diff'
+    alias gch='git checkout '
+    alias gita='gad'
+    alias gitc='gco'
+    alias gitd='gdi'
+    alias gitp='gpu'
+    alias gits='gst'
+    alias  gp='gpu'
+    alias gpu='git pull'
+    alias  gs='gst'
+    alias gst='git status'
+    alias got='git '          # typos
+    alias gut='git '          # typos
 fi
 
 # grep option :
 #    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
-alias grep='grep --color=auto'
+alias grep='grep --color=always'
 
 alias h='hist'
 alias hist='history'
@@ -112,10 +139,24 @@ alias infoKernelRelease='uname --kernel-release'
 alias infoProcessor='uname --processor'
 alias infoProcessorDetailed='lscpu'
 
+# iostat flags
+# -d m n = run continously every m seconds for n times
+# -t   = print the time of each report
+alias io='iostat -d 5 --human -t'
+
 alias kernal='dmesg --color=always --time-format=iso'
 
-#alias mnt="mount | awk -F' ' '{ printf \"%s\t%s\n\",\$1,\$3; }' | column -t | egrep ^/dev/ | sort"
-alias mnt="mount|sort|column -t"
+# mkdir options:
+#    -p, --parents     no error if existing, make parent directories as needed,
+#                      with their file modes unaffected by any -m option.
+#    -v, --verbose     print a message for each created directory
+alias mkdir='mkdir --parents --verbose'
+
+if isPackageInstalled ccze
+  then
+    alias mount='mount|sort|column -t|ccze -A' # Make mount readable!
+  else
+    alias mount='mount|sort|column -t' # Make mount readable!
 
 alias netstat="netstat -tulanp"
 alias now='date +"%d-%m-%Y %T"'
@@ -132,7 +173,7 @@ alias path='echo -e ${PATH//:/\\n}'
 #   --interactive[=WHEN]  : prompt according to WHEN: never, once (-I), or always (-i); without WHEN, prompt always
 #   --preserve-root       : do not remove '/' (default)
 #   --verbose explain what is being done
-alias rm='rm --force --interactive=once --preserve-root --recursive'
+alias rm='rm --force --interactive=once --preserve-root --recursive' # safety net
 
 alias spacehogs='du -hsx * | sort -rh | head -10'
 alias syslog='tail -f /var/log/syslog'
@@ -165,11 +206,13 @@ alias wget='wget -c'
 
 
 if command -v yadm >/dev/null 2>&1; then
-	alias yad='yadm add '
-	alias ybr='yadm branch '
+    alias   y='yadm '
+	alias yad='yadm add'
+	alias ybr='yadm branch'
 	alias yco='yadm commit'
 	alias ydi='yadm diff'
-	alias ych='yadm checkout '                                                                                                                                                                                             1         	alias ypu='git pull'
+	alias ych='yadm checkout '
+    alias ypu='yadm pull'
 	alias yst='yadm status'
 fi
 

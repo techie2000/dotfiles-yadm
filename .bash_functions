@@ -13,6 +13,8 @@ RSYNC_SKIP_COMPRESS=3g2/3gp/3gpp/3mf/7z/aac/ace/amr/apk/appx/appxbundle/arc/arj/
 
 # Personalisation
 PERSONAL_calendar=true
+PERSONAL_hardlink=true
+PERSONAL_ls=true
 
 # keep track of what aliases and functiones we are defining so they can be detailed to the user at the end
 alias_installed=()
@@ -430,14 +432,22 @@ f_du() {
 
     else
 
+        echo "$REQUIRED_PKG is not installed :( Consider installing it!";
+
         FUNCTION_NAME="du"; 
         REQUIRED_PKG="coreutils";
         PACKAGE_NAME="du";
 
         if isPackageInstalled "$REQUIRED_PKG"; then
             unset -f "$FUNCTION_NAME"; 
-            alias "$FUNCTION_NAME"="$PACKAGE_NAME --human-readable --max-depth=1 --total";
-            alias_installed+=("$FUNCTION_NAME=$PACKAGE_NAME --human-readable --max-depth=1 --total");
+            #  -c, --total           produce a grand total
+            #  -d, --max-depth=N     print the total for a directory (or file, with --all)
+            #                          only if it is N or fewer levels below the command
+            #                          line argument;  --max-depth=0 is the same as
+            #                          --summarize
+            #  -h, --human-readable  print sizes in human readable format (e.g., 1K 234M 2G)
+            alias "$FUNCTION_NAME"="$PACKAGE_NAME --human-readable --max-depth=1 --total | grep total";
+            alias_installed+=("$FUNCTION_NAME=$PACKAGE_NAME --human-readable --max-depth=1 --total | grep total");
         fi
 
     fi
@@ -517,11 +527,15 @@ f_hardlinkMedia() {
     REQUIRED_PKG="hardlink";
     PACKAGE_NAME="hardlink";
 
-    if isPackageInstalled "$REQUIRED_PKG"; then
-        unset -f "f_$FUNCTION_NAME";
-        #alias $FUNCTION_NAME="$PACKAGE_NAME --ignore-mode --ignore-owner --ignore-time --keep-oldest --minimum-size 1K --verbose --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$"";
-        alias "$FUNCTION_NAME"="$PACKAGE_NAME --ignore-mode --ignore-owner --ignore-time --keep-oldest --minimum-size 1K --verbose --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$\""; 
-        #alias_installed+=("$FUNCTION_NAME=$PACKAGE_NAME --ignore-mode --ignore-owner --ignore-time --keep-oldest --minimum-size 1K --verbose --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$\"");
+    if [[ "${PERSONAL_hardlink}" == "true" ]] then
+
+        if isPackageInstalled "$REQUIRED_PKG"; then
+            unset -f "f_$FUNCTION_NAME";
+            #alias $FUNCTION_NAME="$PACKAGE_NAME --cache-size 1G --ignore-mode --ignore-owner --ignore-time --io-size 1G --keep-oldest --minimum-size 1K --verbose --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$"";
+            alias "$FUNCTION_NAME"="$PACKAGE_NAME --cache-size 1G --ignore-mode --ignore-owner --ignore-time --io-size 1G --keep-oldest --minimum-size 1K --verbose --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$\""; 
+            #alias_installed+=("$FUNCTION_NAME=$PACKAGE_NAME --cache-size 1G --ignore-mode --ignore-owner --ignore-time --io-size 1G --keep-oldest --minimum-size 1K --verbose --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$\"");
+        fi
+
     fi
 
 }
@@ -533,11 +547,15 @@ f_hardlinkMediaDryRun() {
     REQUIRED_PKG="hardlink";
     PACKAGE_NAME="hardlink";
 
-    if isPackageInstalled "$REQUIRED_PKG"; then
-        unset -f "f_$FUNCTION_NAME";
-        #alias $FUNCTION_NAME='"$PACKAGE_NAME" --ignore-mode --ignore-owner --ignore-time --keep-oldest --minimum-size 1K --verbose --dry-run --include ".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$"';
-        alias "$FUNCTION_NAME"="$PACKAGE_NAME --ignore-mode --ignore-owner --ignore-time --keep-oldest --minimum-size 1K --verbose --dry-run --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$\"";
-        alias_installed+=("$FUNCTION_NAME"="$PACKAGE_NAME --ignore-mode --ignore-owner --ignore-time --keep-oldest --minimum-size 1K --verbose --dry-run --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$\"");
+    if [[ "${PERSONAL_hardlink}" == "true" ]] then
+
+        if isPackageInstalled "$REQUIRED_PKG"; then
+            unset -f "f_$FUNCTION_NAME";
+            #alias $FUNCTION_NAME='"$PACKAGE_NAME" --cache-size 1G --ignore-mode --ignore-owner --ignore-time --io-size 1G --keep-oldest --minimum-size 1K --verbose --dry-run --include ".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$"';
+            alias "$FUNCTION_NAME"="$PACKAGE_NAME --cache-size 1G --ignore-mode --ignore-owner --ignore-time --io-size 1G --keep-oldest --minimum-size 1K --verbose --dry-run --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$\"";
+            alias_installed+=("$FUNCTION_NAME"="$PACKAGE_NAME --cache-size 1G --ignore-mode --ignore-owner --ignore-time --io-size 1G --keep-oldest --minimum-size 1K --verbose --dry-run --include \".*\.(avi|flac|gif|jpe?g|m[ok]v|mp[3-4]|png|tiff)$\"");
+        fi
+
     fi
 
 }
@@ -762,6 +780,7 @@ case $(infoDistro) in
     Slackware* )
         alias installpkg="upgradepkg --install-new" ;
         alias removepkg="removepkg" ;
+        alias updatepkg="upgradepkg" ;
         ;;
     Ubuntu*|Debian*|Raspbian* )
         alias installpkg="apt-get install --yes" ;
@@ -773,6 +792,7 @@ case $(infoDistro) in
 esac
 
 
+#to do: add further aliases for publicIp and externalIp
 # what's my external facing IP ?
 f_infoExternalIp() {
 
@@ -784,6 +804,8 @@ f_infoExternalIp() {
         unset -f "f_$FUNCTION_NAME";
         alias "$FUNCTION_NAME"="$PACKAGE_NAME icanhazip.com";
         alias_installed+=("$FUNCTION_NAME"="$PACKAGE_NAME icanhazip.com");
+    else
+        echo "$REQUIRED_PKG is not installed :( Consider installing it!"
     fi
 
 }
@@ -1004,23 +1026,67 @@ isNum() {
 }
 
 
+# to do: add some other common short cut flavour equivelents
+#        alias ls='ls --almost-all --color=always'
+#        alias lst='ls --almost-all --color=always --human-readable --reverse -t'
+#        alias lsl='ls --almost-all --classify --color=always --human-readable --inode -l --time-style=full-iso'
+#        alias lslt='ls --almost-all --classify --color=always --human-readable --inode -l --reverse -t --time-style=full-iso'
+#
+#        list eza options out
+#
+# invoke ls with personal settings
+# ls options :
+#   -F, --classify         : append indicator (one of */=>@|) to entries
+#   -l                     : use a long listing format
+#   -t                     : sort by modification time, newest first
+#   --almost-all           : do not list implied . and ..
+#   --color[=WHEN]         : colorize the output; WHEN can be 'never', 'auto', or 'always'
+#   --human-readable       : with -l, print sizes in human readable format (e.g., 1K 234M 2G)
+#   --indicator-style=WORD : append indicator with style WORD to entry names: none, slash (-p), file-type (--file-type), classify (-F)
+#   --inode                : print the index number of each file
+#   --reverse              : reverse order while sorting
+#   --time-style=STYLE     : with -l, show times using style STYLE: full-iso, long-iso, iso, locale, or +FORMAT;
+#                             FORMAT is interpreted like in 'date';
+#                             if FORMAT is FORMAT1<newline>FORMAT2, then FORMAT1 applies to non-recent files and FORMAT2 to recent files;
+#                             if STYLE is prefixed with 'posix-', STYLE takes effect only outside the POSIX locale
 f_ls() {
 
 	FUNCTION_NAME="ls";
 	REQUIRED_PKG="eza";
 	PACKAGE_NAME="eza";
 
-	if isPackageInstalled "$REQUIRED_PKG"; then
-		unset -f "f_$FUNCTION_NAME";
-		alias "$FUNCTION_NAME"="$PACKAGE_NAME --all --classify --color=always --color-scale=all --color-scale-mode=gradient --context --extended --flags --git --group --header --icons --inode --links --long --mounts --octal-permissions --time-style=long-iso";
-		alias_installed+=("$FUNCTION_NAME"="$PACKAGE_NAME --all --classify --color=always --color-scale=all --color-scale-mode=gradient --context --extended --flags --git --group --header --icons --inode --links --long --mounts --octal-permissions --time-style=long-iso");
-	else
-		alias "$FUNCTION_NAME"="$FUNCTION_NAME $LS_OPTIONS --almost-all --classify --human-readable --inode -l --time-style=long-iso";
-		alias_installed+=("$FUNCTION_NAME"="$FUNCTION_NAME $LS_OPTIONS --almost-all --classify --human-readable --inode -l --time-style=long-iso");
-	fi
+    if [[ "${PERSONAL_ls}" == "true" ]] then
+
+    	if isPackageInstalled "$REQUIRED_PKG"; then
+	    	unset -f "f_$FUNCTION_NAME";
+		    alias "$FUNCTION_NAME"="$PACKAGE_NAME --all --classify --color=always --color-scale=all --color-scale-mode=gradient --context --extended --flags --git --group --header --icons --inode --links --long --mounts --octal-permissions --time-style=long-iso";
+    		alias_installed+=("$FUNCTION_NAME"="$PACKAGE_NAME --all --classify --color=always --color-scale=all --color-scale-mode=gradient --context --extended --flags --git --group --header --icons --inode --links --long --mounts --octal-permissions --time-style=long-iso");
+    	else
+	    	alias "$FUNCTION_NAME"="$FUNCTION_NAME $LS_OPTIONS --almost-all --classify --human-readable --inode -l --time-style=long-iso";
+		    alias_installed+=("$FUNCTION_NAME"="$FUNCTION_NAME $LS_OPTIONS --almost-all --classify --human-readable --inode -l --time-style=long-iso");
+    	fi
+
+    fi
 
 }
 f_ls
+
+# to do: incorporate these (x2) into the f_ls block above
+# list what node modules are installed on the system
+if [[ "${PERSONAL_ls}" == "true" ]]
+  then
+    alias lsnode='lsl /usr/lib64/node_modules/'
+  else
+    alias lsnode='lsl --almost-all --color --human-readable --inode -l /usr/lib64/node_modules/'
+fi
+
+# list what packages are installed on the system
+if [[ "${PERSONAL_ls}" == "true" ]]
+  then
+    alias lspkgs='lsl /var/log/packages/'
+  else
+    alias lspkgs='lsl --almost-all --color --human-readable --inode -l /var/log/packages/'
+fi
 
 lsgroups() {
 

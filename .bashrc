@@ -203,6 +203,7 @@ echo ""
 # display useful system information when you open the terminal
 clear
 
+# to do: check if neofetch is installed and use that if it's installed
 printf "\n"
 printf "   %s\n" "IP ADDR: $(curl ifconfig.me)" | grep "IP ADDR"
 printf "   %s\n" "USER: $(echo $USER)"
@@ -215,6 +216,8 @@ printf "   %s\n" "PACKAGES: $(dpkg --get-selections | wc -l)"
 printf "   %s\n" "RESOLUTION: $(xrandr | awk '/\*/{printf $1" "}')"
 printf "   %s\n" "MEMORY: $(free -m -h | awk '/Mem/{print $3"/"$2}')"
 printf "\n"
+sensors # to do: check it's installed
+lsscsi # to do: check it's installed
 
 # Check for favoutrite software and recomend to install missing items
 printf "   %s\n" "what's at your disposal?"
