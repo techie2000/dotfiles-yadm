@@ -60,6 +60,8 @@ set undodir=$HOME/.vim/undo/
 " Indent {{{
 
 " Default
+" make backspace work like most other programs
+set backspace=2 "
 " when indenting with '>', use 4 spaces width
 set shiftwidth=4
 " show existing tab with 4 spaces width
