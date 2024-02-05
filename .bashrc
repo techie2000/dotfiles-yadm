@@ -69,7 +69,7 @@ fi
 # ~/.extra can be used for settings you don’t want to commit
 # we run functions after aliases as some functions could surplant the aliases already defined
 # we should look to remove the .bash_alias entry where a .bash_function conditional creates it. e.g. ls
-for file in ~/.{commonrc,bash_[aliases|functions],extra} ~/.shells/{defaults,aliases,functions,exports,git}; do
+for file in ~/.{commonrc,bash_{aliases,functions},extra} ~/.shells/*; do
     [ -r "$file" ] && source "$file"
 done
 unset file
