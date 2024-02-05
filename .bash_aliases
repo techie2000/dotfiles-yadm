@@ -162,6 +162,7 @@ alias netstat="netstat -tulanp"
 alias now='date +"%d-%m-%Y %T"'
 
 alias path='echo -e ${PATH//:/\\n}'
+alias passwordgenerator='cat /dev/urandom |tr -dc A-Za-z0-9 | head -c${1:-32};echo;'
 
 # rm options:
 #    -f, --force          : ignore nonexistent files and arguments, never prompt
