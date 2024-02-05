@@ -62,26 +62,15 @@ fi
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 
-if [ -f "$HOME/.commonrc" ]; then
-  source "$HOME/.commonrc"
-fi
-
-if [ -f $HOME/.bash_aliases ]; then
-  . $HOME/.bash_aliases
-fi
-
+# Load ~/.extra, ~/.bash_prompt, ~/.exports, ~/.aliases and ~/.functions
+# ~/.extra can be used for settings you don’t want to commit
 # we run functions after aliases as some functions could surplant the aliases already defined
 # we should look to remove the .bash_alias entry where a .bash_function conditional creates it. e.g. ls
-if [ -f $HOME/.bash_functions ]; then
-  . $HOME/.bash_functions
-fi
+for file in ~/.{commonrc,bash_[aliases|functions],extra} ~/.shells/{defaults,aliases,functions,exports,git}; do
+    [ -r "$file" ] && source "$file"
+done
+unset file
 
-# Distribute .bashrc into smaller, more specific files
-source .shells/defaults
-#source .shells/functions
-source .shells/exports
-#source .shells/alias
-source .shells/git
 
 # Local customizations allowed and encouraged!
 if [ -f ~/.bashrc_local ]; then
