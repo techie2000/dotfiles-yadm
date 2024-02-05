@@ -3,9 +3,10 @@
 IS_ZSH='true'
 IS_BASH='false'
 
-if [ -f "$HOME/.commonrc" ]; then
-  source "$HOME/.commonrc"
-fi
+for file in ~/.{commonrc,bash_profile}; do
+    [ -r "$file" ] && source "$file"
+done
+unset file
 
 # ZSH-specific content
 
