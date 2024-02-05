@@ -14,6 +14,7 @@ set belloff=all
 set clipboard=unnamed
 set completeopt=menuone,preview,popup,noselect
 set completepopup=align:menu,border:off,highlight:Pmenu
+" On pressing tab, insert 4 spaces
 set expandtab
 set formatoptions=tcqj
 set hidden
@@ -59,8 +60,11 @@ set undodir=$HOME/.vim/undo/
 " Indent {{{
 
 " Default
-set tabstop=4
+" when indenting with '>', use 4 spaces width
 set shiftwidth=4
+" show existing tab with 4 spaces width
+set tabstop=4
+" backspace deletes 4 spaces back if it was a tab undo
 set softtabstop=4
 
 " }}}
@@ -227,6 +231,19 @@ augroup CursorLine
   autocmd!
   au InsertEnter * set nocursorline
   au InsertLeave * set cursorline
+augroup END
+
+augroup filetypedetect
+    au BufRead,BufNewFile .aliases setfiletype sh
+augroup END
+augroup filetypedetect
+    au BufRead,BufNewFile spaceship-prompt setfiletype sh
+augroup END
+
+" Fix auto-indentation for YAML files
+augroup yaml_fix
+    autocmd!
+    autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab indentkeys-=0# indentkeys-=<:>
 augroup END
 
 " vim: set foldmethod=marker:
