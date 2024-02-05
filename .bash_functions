@@ -42,14 +42,19 @@ isPackageInstalled () {
 #        for archive in "$@"; do
 #                if [ -f "$archive" ] ; then
 #                        case "$archive" in
+#                                *.tar)       tar        xvf  "$archive" ;;
 #                                *.tar.bz2)   tar        xvjf "$archive" ;;
 #                                *.tar.gz)    tar        xvzf "$archive" ;;
+#                                *.tar.xz)    tar        Jxvf "$archive" ;;
+#                                *.tar.Z)     tar        xzf  "$archive" ;;
 #                                *.bz2)       bunzip2         "$archive" ;;
 #                                *.rar)       rar        x    "$archive" ;;
 #                                *.gz)        gunzip          "$archive" ;;
-#                                *.tar)       tar        xvf  "$archive" ;;
+#                                *.tb2)       tar        xjf  "$archive" ;;
+#                                *.tbz)       tar        xjf  "$archive" ;;
 #                                *.tbz2)      tar        xvjf "$archive" ;;
 #                                *.tgz)       tar        xvzf "$archive" ;;
+#                                *.txz)       tar        Jxvf "$archive" ;;
 #                                *.zip)       unzip           "$archive" ;;
 #                                *.Z)         uncompress      "$archive" ;;
 #                                *.7z)        7z         x    "$archive" ;;
