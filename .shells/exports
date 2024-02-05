@@ -1,3 +1,6 @@
+################################
+#    Global
+#
 # Remove ZSH default warning when using Bash on macOS.
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
@@ -8,6 +11,23 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+
+# Set up Node env
+export NVM_DIR="$HOME/.nvm"
+
+NODE_GLOBALS=(`find ~/.nvm/versions/node -maxdepth 3 -type l -wholename '*/bin/*' | xargs -n1 basename | sort | uniq`)
+NODE_GLOBALS+=(node nvm)
+
+_load_nvm() {
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+}
+
+for cmd in "${NODE_GLOBALS[@]}"; do
+    eval "function ${cmd}(){ unset -f ${NODE_GLOBALS[*]}; _load_nvm; unset -f _load_nvm; ${cmd} \$@; }"
+done
+unset cmd NODE_GLOBALS
+
 
 # auto-complete command from history
 export INPUTRC=~/.inputrc
@@ -47,3 +67,15 @@ fi
 
 export TIME_STYLE=long-iso
 
+
+################################
+#    Darwin
+#
+{% if yadm.os == "Darwin" %}
+    # Homebrew
+    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    export HOMEBREW_NO_AUTO_UPDATE=1
+    export HOMEBREW_NO_ENV_HINTS=1
+    export PATH=/usr/local/sbin:$PATH
+    source $(brew --prefix)/etc/profile.d/z.sh
+{% endif %}
