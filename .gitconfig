@@ -1,14 +1,17 @@
-[init]
-	defaultBranch = main
+# If you have multiple git[hub|lab] accounts but they use the same email address you can use:
+#    git config --global user.name "Your Name"
+#    git config --global user.email "email@example.com"
+# If the accounts use different emails, you must set up each repo with a local configuration file
+#    git config --local user.name "Your Name"
+#    git config --local user.email "email@example.com"
+
 [core]
 #    editor = \"C:\Program Files\Microsoft VS Code\Code.exe" --wait
+    autocrlf = false
     longpaths = true
     whitespace = fix,-indent-with-non-tab,cr-at-eol
-    autocrlf = false
-[fetch]
-    prune = true
-[pull]
-    rebase = false
+[credential "https://github.com"]
+    username = techie2000
 [color]
     ui = auto
 [color "branch"]
@@ -16,17 +19,22 @@
     local = green bold
     remote = cyan bold
 [color "diff"]
-    meta = yellow bold
     frag = magenta bold
-    old = red bold
+    meta = yellow bold
     new = green bold
+    old = red bold
     whitespace = red reverse
 [color "status"]
     added = green bold
     changed = yellow bold
     untracked = red bold
-[credential]
-    helper = cache
+#[credential]
+#    helper = cache
+[credential "https://github.com"]
+    username = techie2000
+#[credential "helperselector"]
+#    selected = manager-core
+#    sslCAinfo = /etc/ssl/certs/ca-certificates.crt
 [delta]
     features = line-numbers decorations
     line-numbers = true
@@ -44,18 +52,16 @@
     minus-empty-line-marker-style = normal normal
     plus-empty-line-marker-style = normal normal
     line-numbers-right-format = "{np:^4}│ "
+[fetch]
+    prune = true
 [http]
     sslVerify = false
-#[credential "helperselector"]
-#   selected = manager-core
-    sslCAinfo = /etc/ssl/certs/ca-certificates.crt
+[init]
+    defaultBranch = main
 [pretty]
     # https://git-scm.com/docs/pretty-formats
     minimal = %C(auto)%h %d %C(bold)%s%C(reset) %C(dim)(%cr)%C(reset)
     reflog = %C(auto)%h %<|(17)%gd %C(green)%<|(49)%cd%Creset %C(bold)%gs%Creset
+[pull]
+    rebase = false
 
-###
-### Github specific
-###
-[github]
-    user = techie2000
