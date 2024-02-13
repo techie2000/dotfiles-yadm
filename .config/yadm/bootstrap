@@ -71,6 +71,16 @@ pkg_list=(
     "zsh"
 )
 
+##################################
+#   Cargo 'package' list
+cargo_list=(
+    "ripgrep"
+    "fd-find"
+    "exa"
+    "bat"
+    "zoxide"
+    "difftastic"
+)
 
 ##################################
 #   Functions
@@ -168,6 +178,17 @@ install_thefuck() {
     pip3 install thefuck --user
 }
 
+install_rust() {
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+    source "$HOME/.cargo/env"
+
+    # Install some rust tools
+    for tool in "${cargo_list[@]}"; do
+      cargo install $tool
+    done
+}
+
 install_nix() {
     
     install_nix_bin() {
@@ -211,23 +232,23 @@ install_pkgs() {
             ;;
             *Ubuntu*)
                 print_msg "Operating system identified as '$NAME'.";
-                deb_install && install_nix && install_thefuck
+                deb_install && install_rust && install_nix && install_thefuck
             ;;
             *Debian*)
                 print_msg "Operating system identified as '$NAME'.";
-                deb_install && install_nix && install_thefuck
+                deb_install && install_rust && install_nix && install_thefuck
             ;;
             *Mint*)
                 print_msg "Operating system identified as '$NAME'.";
-                deb_install && install_nix && install_thefuck
+                deb_install && install_rust && install_nix && install_thefuck
             ;;
             *neon*)
                 print_msg "Operating system identified as '$NAME'.";
-                deb_install && install_nix && install_thefuck
+                deb_install && install_rust && install_nix && install_thefuck
             ;;
             *Raspbian*)
                 print_msg "Operating system identified as '$NAME'.";
-                deb_install && install_nix && install_thefuck
+                deb_install && install_rust && install_nix && install_thefuck
             ;;
             *)
                 print_error "Unable to identify operating system! Could not install packages...";
