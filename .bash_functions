@@ -107,7 +107,7 @@ f_cal() {
     REQUIRED_PKG="ncal";
     PACKAGE_NAME="ncal";
 
-    if [[ "${PERSONAL_calendar}" == "true" ]] then
+    if [[ "${PERSONAL_calendar}" == "true" ]]; then
         if isPackageInstalled "$REQUIRED_PKG"; then
             unset -f "f_$FUNCTION_NAME";
             alias "$FUNCTION_NAME"="$PACKAGE_NAME -Mwy";
@@ -837,7 +837,7 @@ f_infoExternalIp
 # f_infoInternalIp() {
 	FUNCTION_NAME="infoInternalIp";
 	REQUIRED_PKG="ifconfig";
-	PACKAGE_NAME="ifconfig"'
+	PACKAGE_NAME="ifconfig";
 
 	if isPackageInstalled "$REQUIRED_PKG"; then
 		unset -f "f_$FUNCTION_NAME";
