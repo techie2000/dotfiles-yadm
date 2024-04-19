@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # shellcheck shell=bash
 
 echo "**** $HOME/.bash_functions **** starts ****"
@@ -481,19 +483,9 @@ function find_largest_files() {
     \du --human-readable --one-file-system --summarize ./* | sort -r -h | head -20
 }
 
-# find a file by its inum
-findi() {
-	if [ $# eq 0 ]
-		then
-			echo "Please supply an inum"
-		else
-			find . -iname "$1"
-	fi
-}
-function_installed+=("findi : find a file by its inum")
 
-# find a file/directory by its name
-findn() {
+# find a file by its name
+findf() {
         if [ $# -eq 0 ]
                 then
                         echo "Please supply (part of) a filename"
@@ -502,6 +494,30 @@ findn() {
         fi
 }
 function_installed+=("findn : find a file by its name")
+
+
+# find a directory by its name
+findd() {
+        if [ $# -eq 0 ]
+                then
+                        echo "Please supply (part of) a directory name"
+                else
+                        find . -type d -iname "$1"
+        fi
+}
+function_installed+=("findd : find a directory by its name")
+
+
+# find a file by its name
+findf() {
+        if [ $# -eq 0 ]
+                then
+                        echo "Please supply (part of) a filename"
+                else
+                        find . -type f -iname "$1"
+        fi
+}
+function_installed+=("findf : find a file by its filename")
 
 
 # Options (as of v0.3 RC2)
