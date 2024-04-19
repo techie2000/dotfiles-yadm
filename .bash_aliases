@@ -40,8 +40,9 @@ fi
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
-if command -v notify-send >/dev/null 2>&1; then
-  alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+if isPackageInstalled notify-send 
+  then
+	  alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 fi
 
 #  cat options:
@@ -59,10 +60,11 @@ fi
 # There is a namespace issue on Ubuntu, and bat is likely called batcat to avoid it
 if [[ "${PERSONAL_cat}" == "true" ]]
   then
-        if command -v batcat >/dev/null 2>&1; then
-  	  alias cat='batcat'
-	else
-  	  alias cat='cat --show-all --number'
+        if isPackageInstalled batcat 
+	  then
+		alias cat='batcat'
+	  else
+		alias cat='cat --show-all --number'
 	fi
 fi
 
@@ -136,26 +138,27 @@ if [[ "${PERSONAL_grep}" == "true" ]]
         alias fgrep='fgrep --color=always'
 fi
 
-if command -v git >/dev/null 2>&1; then
-    alias  ga='gad'
-    alias gad='git add '
-    alias gbr='git branch '
-    alias gco='git commit'
-    alias  gc='gco'
-    alias  gd='gdi'
-    alias gdi='git diff'
-    alias gch='git checkout '
-    alias gita='gad'
-    alias gitc='gco'
-    alias gitd='gdi'
-    alias gitp='gpu'
-    alias gits='gst'
-    alias  gp='gpu'
-    alias gpu='git pull'
-    alias  gs='gst'
-    alias gst='git status'
-    alias got='git '          # typos
-    alias gut='git '          # typos
+if isPackageInstalled git 
+  then
+	alias  ga='gad'
+	alias gad='git add '
+    	alias gbr='git branch '
+    	alias gco='git commit'
+    	alias  gc='gco'
+    	alias  gd='gdi'
+    	alias gdi='git diff'
+    	alias gch='git checkout '
+    	alias gita='gad'
+    	alias gitc='gco'
+    	alias gitd='gdi'
+    	alias gitp='gpu'
+    	alias gits='gst'
+    	alias  gp='gpu'
+    	alias gpu='git pull'
+    	alias  gs='gst'
+    	alias gst='git status'
+    	alias got='git '          # typos
+    	alias gut='git '          # typos
 fi
 
 # grep option :
@@ -249,8 +252,9 @@ fi
 
 alias tailKernal='kernal'
 
-if command -v tmux >/dev/null 2>&1; then
-  alias tmux='tmux -2'
+if isPackageInstalled tmux
+  then
+	  alias tmux='tmux -2'
 fi
 
 # Display the directory structure better.
@@ -266,12 +270,15 @@ fi
 
 alias untar='tar --extract --file --verbose -z'
 
-if command -v vim >/dev/null 2>&1; then
-  alias vi='vim'
-fi
-if command -v nvim >/dev/null 2>&1; then
-  alias vim='nvim'
-  alias  vi='nvim'
+if isPackageInstalled nvim
+  then
+	alias vim='nvim'
+	alias  vi='nvim'
+  else
+	if isPackageInstalled nvim
+	  then
+		alias vi='vim'
+	fi
 fi
 
 if [[ "${PERSONAL_wget}" == "true" ]]
@@ -280,14 +287,15 @@ if [[ "${PERSONAL_wget}" == "true" ]]
 fi
 
 # yadm = yet aother dotfile manager
-if command -v yadm >/dev/null 2>&1; then
-    alias   y='yadm '
+if isPackageInstalled yadm
+  then
+	alias   y='yadm '
 	alias yad='yadm add'
 	alias ybr='yadm branch'
 	alias yco='yadm commit'
 	alias ydi='yadm diff'
 	alias ych='yadm checkout '
-    alias ypu='yadm pull'
+	alias ypu='yadm pull'
 	alias yst='yadm status'
 fi
 
