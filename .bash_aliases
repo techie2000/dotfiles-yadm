@@ -5,12 +5,27 @@ echo "**** $HOME/.bash_aliases **** starts ****"
 echo ""
 
 # Personalisation
+PERSONAL_ch=true    # ch[grp|own|mod]
+PERSONAL_cat=true
 PERSONAL_df=true
+PERSONAL_diff=true
+PERSONAL_grep=true  # [e|f]grep
+PERSONAL_ls=true
+PERSONAL_mkdir=true
+PERSONAL_mount=true
+PERSONAL_netstat=true
+PERSONAL_rm=true
+PERSONAL_tree=true
+PERSONAL_wget=true
+
 
 # The following lines will see your `ls' output colorized
 export LS_OPTIONS='--color=auto'
 eval "$(dircolors)"
-alias ls='ls $LS_OPTIONS --almost-all --classify --human-readable --inode -l --time-style=long-iso'
+if [[ "${PERSONAL_ls}" == "true" ]]
+  then
+        alias ls='ls $LS_OPTIONS --almost-all --classify --human-readable --inode -l --time-style=long-iso'
+fi
 
 # to do: bring the IS_LINUX() under source control so it can be reused here
 # update and upgrade
@@ -42,10 +57,13 @@ fi
 #    -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB
 #
 # There is a namespace issue on Ubuntu, and bat is likely called batcat to avoid it
-if command -v batcat >/dev/null 2>&1; then
-  alias cat='batcat'
-else
-  alias cat='cat --show-all --number'
+if [[ "${PERSONAL_cat}" == "true" ]]
+  then
+        if command -v batcat >/dev/null 2>&1; then
+  	  alias cat='batcat'
+	else
+  	  alias cat='cat --show-all --number'
+	fi
 fi
 
 alias   ..='cd ..'
@@ -66,9 +84,12 @@ alias bashfunctions='vi $HOME/.bash_functions && source $HOME/.bash_functions'
 alias calc="bc -l"
 alias countfiles=='find . -type f | wc -l'
 
-alias chgrp='chgrp --preserve-root' # safety net
-alias chmod='chmod --preserve-root' # safeyy net
-alias chown='chown --preserve-root' # safety net
+if [[ "${PERSONAL_ch}" == "true" ]]
+  then
+        alias chgrp='chgrp --preserve-root' # safety net
+	alias chmod='chmod --preserve-root' # safeyy net
+	alias chown='chown --preserve-root' # safety net
+fi
 
 #to do: make m and n optional parameters of the call (i.e. move this to a function)
 # pidstat flags
@@ -87,7 +108,10 @@ fi
 # to do: need to check that colordiff is installed and offer to install it if it isn't (and not set the alias if it's not)
 # if it's not installed, alias this instead
 # alias diff='diff --color --side-by-side'
-alias diff="colordiff --color=auto --report-identical-files --side-by-side"
+if [[ "${PERSONAL_df}" == "true" ]]
+  then
+        alias diff="colordiff --color=auto --report-identical-files --side-by-side"
+fi
 
 # df options:
 #   -h, --human-readable   : print sizes in powers of 1024 (e.g., 1023M)
@@ -100,11 +124,17 @@ alias dut='\df --human-readable --local --total | grep --extended-regexp '"'tota
 
 # egrep option :
 #    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
-alias egrep='egrep --color=always'
+if [[ "${PERSONAL_grep}" == "true" ]]
+  then
+        alias egrep='egrep --color=always'
+fi
 
 # fgrep option :
 #    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
-alias fgrep='fgrep --color=always'
+if [[ "${PERSONAL_grep}" == "true" ]]
+  then
+        alias fgrep='fgrep --color=always'
+fi
 
 if command -v git >/dev/null 2>&1; then
     alias  ga='gad'
@@ -130,7 +160,10 @@ fi
 
 # grep option :
 #    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
-alias grep='grep --color=always'
+if [[ "${PERSONAL_grep}" == "true" ]]
+  then
+        alias grep='grep --color=always'
+fi
 
 alias h='hist'
 alias hist='history'
@@ -165,15 +198,26 @@ alias kernal='dmesg --color=always --decode --follow --human --time-format=iso'
 #    -p, --parents     no error if existing, make parent directories as needed,
 #                      with their file modes unaffected by any -m option.
 #    -v, --verbose     print a message for each created directory
-alias mkdir='mkdir --parents --verbose'
-
-if isPackageInstalled ccze
+if [[ "${PERSONAL_df}" == "true" ]]
   then
-    alias mount='mount|sort|column -t|ccze -A' # Make mount readable!
-  else
-    alias mount='mount|sort|column -t' # Make mount readable!
+        alias mkdir='mkdir --parents --verbose'
+fi
 
-alias netstat="netstat -tulanp"
+if [[ "${PERSONAL_mount}" == "true" ]]
+  then
+	if isPackageInstalled ccze
+	  then
+	    alias mount='mount|sort|column -t|ccze -A' # Make mount readable!
+	  else
+	    alias mount='mount|sort|column -t' # Make mount readable!
+	fi
+fi
+
+if [[ "${PERSONAL_netstat}" == "true" ]]
+  then
+	alias netstat="netstat -tulanp"
+fi
+
 alias now='date +"%d-%m-%Y %T"'
 
 alias path='echo -e ${PATH//:/\\n}'
@@ -189,10 +233,19 @@ alias passwordgenerator='cat /dev/urandom |tr -dc A-Za-z0-9 | head -c${1:-32};ec
 #   --interactive[=WHEN]  : prompt according to WHEN: never, once (-I), or always (-i); without WHEN, prompt always
 #   --preserve-root       : do not remove '/' (default)
 #   --verbose explain what is being done
-alias rm='rm --force --interactive=once --preserve-root --recursive' # safety net
+if [[ "${PERSONAL_rm}" == "true" ]]
+  then
+	alias rm='rm --force --interactive=once --preserve-root --recursive' # safety net
+fi
 
 alias spacehogs='du -hsx * | sort -rh | head -10'
-alias syslog='tail -f /var/log/syslog'
+
+if isPackageInstalled ccze  
+  then
+	alias syslog='tail -f /var/log/syslog | ccze'
+  else
+	alias syslog='tail -f /var/log/syslog'
+fi
 
 alias tailKernal='kernal'
 
@@ -206,7 +259,10 @@ fi
 #   -F                     : Appends '/', '=', '*', '@', '|' or '>' as per ls -F
 #   -h                     : Print the size in a more human-readable way
 #   --dirsfirst            : List directories before files (-U disables)
-alias tree='tree --dirsfirst -A -C -F -h'
+if [[ "${PERSONAL_tree}" == "true" ]]
+  then
+        alias tree='tree --dirsfirst -A -C -F -h'
+fi
 
 alias untar='tar --extract --file --verbose -z'
 
@@ -218,9 +274,12 @@ if command -v nvim >/dev/null 2>&1; then
   alias  vi='nvim'
 fi
 
-alias wget='wget -c'
+if [[ "${PERSONAL_wget}" == "true" ]]
+  then
+        alias wget='wget -c'
+fi
 
-
+# yadm = yet aother dotfile manager
 if command -v yadm >/dev/null 2>&1; then
     alias   y='yadm '
 	alias yad='yadm add'
