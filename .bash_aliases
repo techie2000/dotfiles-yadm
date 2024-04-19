@@ -70,18 +70,18 @@ alias chgrp='chgrp --preserve-root' # safety net
 alias chmod='chmod --preserve-root' # safeyy net
 alias chown='chown --preserve-root' # safety net
 
-#to do: make m an n optional parameters of the call (i.e. move this to a function)
+#to do: make m and n optional parameters of the call (i.e. move this to a function)
 # pidstat flags
 # run continuously every m seconds (for n times)
 alias cpu='pidstat 5 3 --human'
 
 # df options:
 #   -h, --human-readable   : print sizes in powers of 1024 (e.g., 1023M)
-#   -k                     : like --block-size=1K
+#   -l, --local            : limit listing to local file systems
 #   -T, --print-type       : print file system type
 if [[ "${PERSONAL_df}" == "true" ]]
   then
-        alias df='df -k --human-readable --print-type | grep "disk[^s]\|cache\|shm\|user0\|log\|pool\|Mount" | sort -k 7'
+        alias df='df --human-readable --local --print-type | head -n 1 | awk '\''{print "\033[33m"$0"\033[39m"}'\''; df --human-readable --local --print-type | tail -n +2 |  sort --version-sort -k 7 | awk '\''BEGIN{FS=OFS="/"} {if (NF>1) {printf "%s", $1; for(i=2; i<NF; i++) printf "/%s", $i; printf "/\033[33m%s\033[39m\n", $NF} else print $0}'\'
 fi
 
 # to do: need to check that colordiff is installed and offer to install it if it isn't (and not set the alias if it's not)
@@ -89,7 +89,14 @@ fi
 # alias diff='diff --color --side-by-side'
 alias diff="colordiff --color=auto --report-identical-files --side-by-side"
 
-alias dut='df -hl --total | grep total' # total disk usage
+# df options:
+#   -h, --human-readable   : print sizes in powers of 1024 (e.g., 1023M)
+#   -l, --local            : limit listing to local file systems
+#       --total            : elide all entries insignificant to available space,
+#                              and produce a grand total
+# grep options:
+#   -E, --extended-regexp     PATTERNS are extended regular expressions
+alias dut='\df --human-readable --local --total | grep --extended-regexp '"'total|Avail'"  # disk usage - total
 
 # egrep option :
 #    --colo[u]r[=WHEN]     : use markers to highlight the matching strings; WHEN is 'always', 'never', or 'auto'
