@@ -104,13 +104,14 @@ alias cpu='pidstat 5 3 --human'
 #   -T, --print-type       : print file system type
 if [[ "${PERSONAL_df}" == "true" ]]
   then
+        # shellcheck disable=SC2142
         alias df='df --human-readable --local --print-type | head -n 1 | awk '\''{print "\033[33m"$0"\033[39m"}'\''; df --human-readable --local --print-type | tail -n +2 |  sort --version-sort -k 7 | awk '\''BEGIN{FS=OFS="/"} {if (NF>1) {printf "%s", $1; for(i=2; i<NF; i++) printf "/%s", $i; printf "/\033[33m%s\033[39m\n", $NF} else print $0}'\'
 fi
 
 # to do: need to check that colordiff is installed and offer to install it if it isn't (and not set the alias if it's not)
 # if it's not installed, alias this instead
 # alias diff='diff --color --side-by-side'
-if [[ "${PERSONAL_df}" == "true" ]]
+if [[ "${PERSONAL_diff}" == "true" ]]
   then
         alias diff="colordiff --color=auto --report-identical-files --side-by-side"
 fi
@@ -201,7 +202,7 @@ alias kernal='dmesg --color=always --decode --follow --human --time-format=iso'
 #    -p, --parents     no error if existing, make parent directories as needed,
 #                      with their file modes unaffected by any -m option.
 #    -v, --verbose     print a message for each created directory
-if [[ "${PERSONAL_df}" == "true" ]]
+if [[ "${PERSONAL_mkdir}" == "true" ]]
   then
         alias mkdir='mkdir --parents --verbose'
 fi
@@ -224,6 +225,7 @@ fi
 alias now='date +"%d-%m-%Y %T"'
 
 alias path='echo -e ${PATH//:/\\n}'
+# shellcheck disable=SC2142
 alias passwordgenerator='cat /dev/urandom |tr -dc A-Za-z0-9 | head -c${1:-32};echo;'
 
 # rm options:
