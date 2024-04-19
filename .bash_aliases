@@ -41,7 +41,7 @@ fi
 #    -u                       (ignored)
 #    -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB
 #
-# There is a namspace issue on Ubuntu, and bat is likely called batcat to avoid it
+# There is a namespace issue on Ubuntu, and bat is likely called batcat to avoid it
 if command -v batcat >/dev/null 2>&1; then
   alias cat='batcat'
 else
@@ -54,7 +54,7 @@ alias   up='cd ..'
 alias  up2='cd ../..'
 alias  up3='cd ../../..'
 
-#to do: bring the IS_WSL() under source control to renenable this
+#to do: bring the IS_WSL() under source control to re-enable this
 #if [[ ${IS_WSL} == true ]]; then
 #    # shellcheck disable=2139
 #    alias cdh="cd /mnt/c/Users/${USER}" # Change to the home directory in Windows
@@ -72,7 +72,7 @@ alias chown='chown --preserve-root' # safety net
 
 #to do: make m an n optional parameters of the call (i.e. move this to a function)
 # pidstat flags
-# run continously every m seconds (for n times)
+# run continuously every m seconds (for n times)
 alias cpu='pidstat 5'
 
 # df options:
@@ -84,7 +84,7 @@ if [[ "${PERSONAL_df}" == "true" ]]
         alias df='df -k --human-readable --print-type | grep "disk[^s]\|cache\|shm\|user0\|log\|pool\|Mount" | sort -k 7'
 fi
 
-# to do: need to check that colordiff is installed and offer to install it if it isnt (and not set the alias idf it's not)
+# to do: need to check that colordiff is installed and offer to install it if it isn't (and not set the alias if it's not)
 # if it's not installed, alias this instead
 # alias diff='diff --color --side-by-side'
 alias diff="colordiff --color=auto --report-identical-files --side-by-side"
@@ -140,7 +140,7 @@ alias infoProcessor='uname --processor'
 alias infoProcessorDetailed='lscpu'
 
 # iostat flags
-# -d m n = run continously every m seconds for n times
+# -d m n = run continuously every m seconds for n times
 # -t   = print the time of each report
 alias io='iostat -d 5 --human -t'
 
@@ -189,7 +189,7 @@ fi
 #   -A                     : Print ANSI lines graphic indentation lines
 #   -C                     : Turn colorization on always
 #   -F                     : Appends '/', '=', '*', '@', '|' or '>' as per ls -F
-#   -h                     : Print the size in a more human readable way
+#   -h                     : Print the size in a more human-readable way
 #   --dirsfirst            : List directories before files (-U disables)
 alias tree='tree --dirsfirst -A -C -F -h'
 
