@@ -144,7 +144,15 @@ alias infoProcessorDetailed='lscpu'
 # -t   = print the time of each report
 alias io='iostat -d 5 --human -t'
 
-alias kernal='dmesg --color=always --time-format=iso'
+# dmesg options:
+#    -H, --human                 human-readable output
+#    -L, --color[=<when>]        colorize messages (auto, always or never)
+#    -w, --follow                wait for new messages
+#    -W, --follow-new            wait and print only new messages
+#    -x, --decode                decode facility and level to readable string
+#        --time-format <format>  show timestamp using the given format:
+#                                  [delta|reltime|ctime|notime|iso]
+alias kernal='dmesg --color=always --decode --follow --human --time-format=iso'
 
 # mkdir options:
 #    -p, --parents     no error if existing, make parent directories as needed,
@@ -179,7 +187,7 @@ alias rm='rm --force --interactive=once --preserve-root --recursive' # safety ne
 alias spacehogs='du -hsx * | sort -rh | head -10'
 alias syslog='tail -f /var/log/syslog'
 
-alias tailKernal='dmesg --color=always --time-format=iso --follow'
+alias tailKernal='kernal'
 
 if command -v tmux >/dev/null 2>&1; then
   alias tmux='tmux -2'
