@@ -73,7 +73,7 @@ alias chown='chown --preserve-root' # safety net
 #to do: make m an n optional parameters of the call (i.e. move this to a function)
 # pidstat flags
 # run continuously every m seconds (for n times)
-alias cpu='pidstat 5'
+alias cpu='pidstat 5 3 --human'
 
 # df options:
 #   -h, --human-readable   : print sizes in powers of 1024 (e.g., 1023M)
