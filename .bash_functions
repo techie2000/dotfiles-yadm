@@ -484,18 +484,6 @@ function find_largest_files() {
 }
 
 
-# find a file by its name
-findf() {
-        if [ $# -eq 0 ]
-                then
-                        echo "Please supply (part of) a filename"
-                else
-                        find . -iname "$1"
-        fi
-}
-function_installed+=("findn : find a file by its name")
-
-
 # find a directory by its name
 findd() {
         if [ $# -eq 0 ]
