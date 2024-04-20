@@ -822,7 +822,7 @@ f_infoExternalIp
 
 
 # what's my internal IP addresses
-# f_infoInternalIp() {
+f_infoInternalIp() {
 	FUNCTION_NAME="infoInternalIp";
 	REQUIRED_PKG="ifconfig";
 	PACKAGE_NAME="ifconfig";
@@ -1277,7 +1277,7 @@ trash() {
                 then
                         echo "Please supply a (single) directory/path"
                 else
-                        mv "$@" $HOME/.local/share/trash 
+                        mv "$@" "$HOME/.local/share/trash"
                         echo "Your files are in the trash ($HOME/.local/share/trash) waiting to be emptied (amd reclaim disk space)"
 
         fi
