@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # shellcheck shell=bash
+# to prevent individual shellchecks for the whole file, add their reference number in the below line 
+# shellcheck disable=SC1,2
 
 echo "**** $HOME/.bash_functions **** starts ****"
 
@@ -536,7 +538,7 @@ f_hardlinkMedia() {
     REQUIRED_PKG="hardlink";
     PACKAGE_NAME="hardlink";
 
-    if [[ "${PERSONAL_hardlink}" == "true" ]] then
+    if [[ "${PERSONAL_hardlink}" == "true" ]]; then
 
         if isPackageInstalled "$REQUIRED_PKG"; then
             unset -f "f_$FUNCTION_NAME";
@@ -556,7 +558,7 @@ f_hardlinkMediaDryRun() {
     REQUIRED_PKG="hardlink";
     PACKAGE_NAME="hardlink";
 
-    if [[ "${PERSONAL_hardlink}" == "true" ]] then
+    if [[ "${PERSONAL_hardlink}" == "true" ]]; then
 
         if isPackageInstalled "$REQUIRED_PKG"; then
             unset -f "f_$FUNCTION_NAME";
@@ -1064,7 +1066,7 @@ f_ls() {
 	REQUIRED_PKG="eza";
 	PACKAGE_NAME="eza";
 
-    if [[ "${PERSONAL_ls}" == "true" ]] then
+    if [[ "${PERSONAL_ls}" == "true" ]]; then
 
     	if isPackageInstalled "$REQUIRED_PKG"; then
 	    	unset -f "f_$FUNCTION_NAME";
