@@ -12,6 +12,7 @@ export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
+
 # Set up Node env
 export NVM_DIR="$HOME/.nvm"
 
@@ -28,6 +29,13 @@ for cmd in "${NODE_GLOBALS[@]}"; do
 done
 unset cmd NODE_GLOBALS
 
+# fnm (fast node manager)
+export PATH="/root/.local/share/fnm:$PATH"
+eval "`fnm env`"
+
+
+# Rust
+export RUSTFLAGS="-C target-cpu=native"
 
 # auto-complete command from history
 export INPUTRC=~/.inputrc
