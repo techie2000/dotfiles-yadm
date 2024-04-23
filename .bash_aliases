@@ -19,9 +19,17 @@ PERSONAL_tree=true
 PERSONAL_wget=true
 
 # The following lines will see your `ls' output colorized
-export LS_OPTIONS='--color=auto'
-eval "$(dircolors)"
 if [[ "${PERSONAL_ls}" == "true" ]]; then
+    export LS_OPTIONS='--color=auto'
+
+    if [ -x /usr/bin/dircolors ]; then
+      if test -r "$HOME/.dircolors"; then
+        eval "$(dircolors -b "$HOME/.dircolors")"
+      else
+        eval "$(dircolors -b)"
+      fi
+    fi
+
     alias ls='ls $LS_OPTIONS --almost-all --classify --human-readable --inode -l --time-style=long-iso'
 fi
 
