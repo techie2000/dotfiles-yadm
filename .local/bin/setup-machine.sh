@@ -26,6 +26,8 @@ function install_packages() {
     jq
     lsb-release
     nano
+    nodejs
+    npm
     openssh-server
     p7zip-full
     p7zip-rar
@@ -78,6 +80,29 @@ function install_brew() {
   curl -fsSLo "$install" https://raw.githubusercontent.com/Homebrew/install/master/install.sh
   bash -- "$install" </dev/null
   rm -- "$install"
+}
+
+# fnm = fast node manager
+function install_fnm() {
+  local install
+  install="$(mktemp)"
+  curl -fsSL https://fnm.vercel.app/install > "$install"
+  bash -- "$install" </dev/null
+  rm -- "$install"
+}
+
+# nvm = node version manager
+function install_nvm() {
+  local install
+  install="$(mktemp)"
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh > "$install"
+  bash -- "$install" </dev/null
+  rm -- "$install"
+}
+
+install_node_extras() {
+  install_fnm
+  install_nvm
 }
 
 # Install Visual Studio Code.
@@ -216,6 +241,7 @@ add_to_sudoers
 
 install_packages
 install_docker
+install_node_extras
 install_brew
 install_vscode
 install_bat
