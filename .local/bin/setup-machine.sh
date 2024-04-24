@@ -132,24 +132,67 @@ function install_exa() {
 }
 
 function install_bat() {
-  local v="0.19.0"
-  ! command -v bat &>/dev/null || [[ "$(bat --version)" != *" $v" ]] || return 0
-  local deb
-  deb="$(mktemp)"
-  curl -fsSL "https://github.com/sharkdp/bat/releases/download/v${v}/bat_${v}_amd64.deb" > "$deb"
-  sudo dpkg -i "$deb"
-  rm "$deb"
+  local latest_version
+  latest_version="$(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.tag_name')"
+  latest_version="${latest_version#v}" # Remove the leading 'v'
+
+  # Check if bat is already installed
+  if ! command -v bat &>/dev/null; then
+    echo "bat is not currently installed."
+  else
+    local installed_version
+    installed_version="$(bat --version | awk '{print $2}')"
+
+    # Compare versions
+    if [[ "$installed_version" == "$latest_version" ]]; then
+      echo "bat is already up to date (version $latest_version)."
+      return
+    fi
+
+    echo "Installed bat version: $installed_version"
+  fi
+
+  echo "The latest version of bat is $latest_version."
+  read -p "Do you want to install the newer version? (y/n): " choice
+  if [[ "$choice" == [Yy]* ]]; then
+    local deb
+    deb="$(mktemp)"
+    curl -fsSL "https://github.com/sharkdp/bat/releases/download/v${latest_version}/bat_${latest_version}_amd64.deb" > "$deb"
+    sudo dpkg -i "$deb"
+    rm "$deb"
+    echo "bat $latest_version has been installed."
+  else
+    echo "You chose not to install the newer version."
+  fi
 }
 
 function install_gh() {
-  local v="2.5.1"
-  ! command -v gh &>/dev/null || [[ "$(gh --version)" != */v"$v" ]] || return 0
-  local deb
-  deb="$(mktemp)"
-  curl -fsSL "https://github.com/cli/cli/releases/download/v${v}/gh_${v}_linux_amd64.deb" > "$deb"
-  sudo dpkg -i "$deb"
-  rm "$deb"
+  local latest_version
+  latest_version="$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r '.tag_name')"
+
+  # Check if gh is already installed or if the installed version matches the latest version
+  if ! command -v gh &>/dev/null; then
+    echo "gh is not currently installed."
+  else
+    local installed_version
+    installed_version="$(gh --version | awk '{print $3}')"
+    echo "Installed gh version: $installed_version"
+  fi
+
+  echo "The latest version of gh is $latest_version."
+  read -p "Do you want to install the newer version? (y/n): " choice
+  if [[ "$choice" == [Yy]* ]]; then
+    local deb
+    deb="$(mktemp)"
+    curl -fsSL "https://github.com/cli/cli/releases/download/v${latest_version}/gh_${latest_version}_linux_amd64.deb" > "$deb"
+    sudo dpkg -i "$deb"
+    rm "$deb"
+    echo "gh v$latest_version has been installed."
+  else
+    echo "You chose not to install the newer version."
+  fi
 }
+
 
 function install_nuget() {
   (( WSL )) || return 0
