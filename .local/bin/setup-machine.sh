@@ -12,6 +12,7 @@ fi
 function install_packages() {
   local packages=(
     apt-transport-https
+    build-essential
     bzip2
     ca-certificates
     command-not-found
