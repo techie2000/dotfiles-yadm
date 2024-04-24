@@ -35,6 +35,7 @@ function install_packages() {
     perl
     python3
     python3-pip
+    qemu-guest-agent
     tree
     unrar
     unzip
