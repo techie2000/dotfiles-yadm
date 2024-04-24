@@ -326,8 +326,8 @@ install_vscode
 install_bat
 install_gh
 install_eza
-install_nuget
-install_fonts
+install_nuget # WSL only
+install_fonts # WSL only
 
 enable_sshd
 
