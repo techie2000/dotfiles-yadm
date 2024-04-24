@@ -317,7 +317,7 @@ install_brew
 install_vscode
 install_bat
 install_gh
-install_exa
+install_eza
 install_nuget
 install_fonts
 
