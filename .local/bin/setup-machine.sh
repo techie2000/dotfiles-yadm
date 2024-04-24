@@ -20,6 +20,7 @@ function install_packages() {
     git
     gnome-icon-theme
     gnupg
+    gpg
     gzip
     htop
     inetutils-traceroute
@@ -118,17 +119,42 @@ function install_vscode() {
   rm -- "$deb"
 }
 
-function install_exa() {
-  local v="0.10.1"
-  ! command -v exa &>/dev/null || [[ "$(exa --version)" != *" v$v" ]] || return 0
-  local tmp
-  tmp="$(mktemp -d)"
-  pushd -- "$tmp"
-  curl -fsSLO "https://github.com/ogham/exa/releases/download/v${v}/exa-linux-x86_64-${v}.zip"
-  unzip exa-linux-x86_64-${v}.zip
-  sudo install -DT ./exa-linux-x86_64 /usr/local/bin/exa
-  popd
-  rm -rf -- "$tmp"
+function install_eza() {
+  local latest_version
+  latest_version="$(curl -s https://api.github.com/repos/eza-community/eza/releases/latest | jq -r '.tag_name')"
+  latest_version="${latest_version#v}" # Remove the leading 'v'
+
+  # Check if eza is already installed
+  if ! command -v eza &>/dev/null; then
+    echo "eza is not currently installed."
+  else
+    local installed_version
+    installed_version="$(eza --version | awk '{print $2}')"
+
+    # Compare versions
+    if [[ "$installed_version" == "$latest_version" ]]; then
+      echo "eza is already up to date (version $latest_version)."
+      return
+    fi
+
+    echo "Installed eza version: $installed_version"
+  fi
+
+  echo "The latest version of eza is $latest_version."
+  read -p "Do you want to install the newer version? (y/n): " choice
+  if [[ "$choice" == [Yy]* ]]; then
+    local zip
+    zip="$(mktemp)"
+    curl -fsSL "https://github.com/eza-community/eza/releases/download/v${latest_version}/eza_x86_64-unknown-linux-gnu.zip" > "$zip"
+    unzip "$zip"
+    rm "$zip"
+    sudo chmod +x eza
+    sudo chown root:root eza
+    sudo mv eza /usr/local/bin/eza
+    echo "eza $latest_version has been installed."
+  else
+    echo "You chose not to install the newer version."
+  fi
 }
 
 function install_bat() {
