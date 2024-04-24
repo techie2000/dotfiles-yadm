@@ -195,6 +195,7 @@ function install_bat() {
 function install_gh() {
   local latest_version
   latest_version="$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r '.tag_name')"
+  latest_version="${latest_version#v}" # Remove the leading 'v'
 
   # Check if gh is already installed or if the installed version matches the latest version
   if ! command -v gh &>/dev/null; then
@@ -202,10 +203,17 @@ function install_gh() {
   else
     local installed_version
     installed_version="$(gh --version | awk '{print $3}')"
+
+    # Compare versions
+    if [[ "$installed_version" == "$latest_version" ]]; then
+      echo "gh is already up to date (version $latest_version)."
+      return
+    fi
+
     echo "Installed gh version: $installed_version"
   fi
 
-  echo "The latest version of gh is $latest_version."
+  echo "The latest version of eza is $latest_version."
   read -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     local deb
