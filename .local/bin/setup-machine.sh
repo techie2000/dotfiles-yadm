@@ -59,6 +59,15 @@ function install_packages() {
   sudo apt-get autoclean
 }
 
+# Install a bunch of cargo packages.
+function install_cargo_packages() {
+  local packages=(
+    gptcommit
+  )
+
+  cargo install --locked "${packages[@]}"
+}
+
 function install_docker() {
   if (( WSL )); then
     local release
@@ -321,6 +330,7 @@ add_to_sudoers
 install_packages
 install_docker
 install_node_extras
+install_cargo_packages
 install_brew
 install_vscode
 install_bat
