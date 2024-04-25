@@ -210,6 +210,26 @@ function install_rust() {
   fi
 }
 
+# oh-my-zsh (manage zsh configurations)
+function install_oh-my-zsh() {
+  local package
+  package="oh-my-zsh"
+  
+  if [[ ! -d "$HOME/.$package" ]]; then
+    echo
+    info "Installing $package...\n"
+    echo
+    local install
+    install="$(mktemp)"
+    curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh > "$install"
+    sh "$install" </dev/null
+    rm -- "$install"
+  else
+    echo
+    success "$package is already installed\n"
+  fi
+}
+
 # Install Visual Studio Code.
 function install_vscode() {
   (( !WSL )) || return 0
@@ -424,6 +444,8 @@ install_packages
 install_docker
 install_node_extras
 install_pyenv
+install_rust
+install_oh-my-zsh
 install_cargo_packages
 install_brew
 install_vscode
