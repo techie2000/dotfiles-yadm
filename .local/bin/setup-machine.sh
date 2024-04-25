@@ -164,6 +164,29 @@ install_node_extras() {
   install_nvm
 }
 
+# pyenv = python version manager
+function install_pyenv() {
+  local package
+  package="pyenv"
+  
+  if ! command -v $package > /dev/null 2>&1; then
+    echo
+    info "Installing $package...\n"
+    echo
+    local install
+    install="$(mktemp)"
+    curl https://pyenv.run > "$install"
+    bash -- "$install" </dev/null
+    rm -- "$install"
+  else
+    echo
+    success "$package is already installed\n"
+    info "Installing updates if available"
+    pyenv update
+    echo
+  fi
+}
+
 # Install Visual Studio Code.
 function install_vscode() {
   (( !WSL )) || return 0
@@ -377,6 +400,7 @@ add_to_sudoers
 install_packages
 install_docker
 install_node_extras
+install_pyenv
 install_cargo_packages
 install_brew
 install_vscode
