@@ -2,6 +2,33 @@
 #
 # Sets up environment. Can be run multiple times.
 
+#####
+##### reusable functions 
+#####
+function info() {
+  tput setaf 4
+  echo -n "$@"
+  tput sgr0
+}
+
+function warning() {
+  tput setaf 3
+  tput bold
+  echo -n "$@"
+  tput sgr0
+  sleep 0.5
+}
+
+function success() {
+  tput setaf 2
+  echo -n "$@"
+  tput sgr0
+}
+#####
+##### reusable functions ends
+#####
+
+
 if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
   readonly WSL=1
 else
@@ -52,11 +79,31 @@ function install_packages() {
     packages+=(iotop docker.io)
   fi
 
+  echo
+  info "Updating apt...\n"
   sudo apt-get update
+  echo
   sudo bash -c 'DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::options::=--force-confdef -o DPkg::options::=--force-confold upgrade -y'
-  sudo apt-get install -y "${packages[@]}"
+
+  for package in "${packages[@]}"; do
+    
+    if ! command -v "$package" > /dev/null 2>&1; then
+      echo
+      info "Installing $package...\n"
+      echo
+      sudo apt-get install -y "$package"
+    else
+      echo
+      success "$package is already installed\n"
+      echo
+    fi
+  done
+  
+  echo
+  info "Cleaning up apt...\n"
   sudo apt-get autoremove -y
   sudo apt-get autoclean
+  echo
 }
 
 # Install a bunch of cargo packages.
@@ -348,4 +395,11 @@ fix_dbus
 
 set_preferences
 
-echo SUCCESS
+info "Let's sort github authentication..."
+gh auth login
+echo
+info "Let's add some github extensions"
+gh extension install dlvhdr/gh-dash
+echo
+
+success "SUCCESS - all finished"
