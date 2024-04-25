@@ -230,6 +230,27 @@ function install_oh-my-zsh() {
   fi
 }
 
+# Install a bunch of oh-my-zsh plugins.
+function install_oh-my-zsh_plugins() {
+  local plugins=(
+    zsh-completions
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+  )
+
+  for plugin in "${plugins[@]}"; do
+    plugin_path="${ZSH_CUSTOM:-${ZSH:-$HOME/.oh-my-zsh}/custom}/plugins/$plugin"
+    if [[ ! -d $plugin_path ]]; then
+      info "Installing $plugin..."
+      echo
+      git clone https://github.com/zsh-users/"$plugin" "$plugin_path"
+    else
+      success "$plugin is already installed"
+      echo
+    fi
+  done
+}
+ 
 # Install Visual Studio Code.
 function install_vscode() {
   (( !WSL )) || return 0
@@ -335,7 +356,7 @@ function install_gh() {
     echo "Installed gh version: $installed_version"
   fi
 
-  echo "The latest version of eza is $latest_version."
+  echo "The latest version of gh is $latest_version."
   read -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     local deb
@@ -446,6 +467,7 @@ install_node_extras
 install_pyenv
 install_rust
 install_oh-my-zsh
+install_oh-my-zsh_plugins
 install_cargo_packages
 install_brew
 install_vscode
