@@ -112,7 +112,24 @@ function install_cargo_packages() {
     gptcommit
   )
 
-  cargo install --locked "${packages[@]}"
+  local cargo_bin_dir="$HOME/.cargo/bin"  # Directory where Cargo binaries are installed
+
+  for package in "${packages[@]}"; do
+  
+    # Check if the binary corresponding to the package is not in the PATH and not in cargo_bin_dir
+    if ! command -v "$package" &>/dev/null && ! [ -x "$cargo_bin_dir/$package" ]; then
+      echo
+      info "Installing $package..."
+      echo
+      cargo install --locked "$package"
+    else
+      echo
+      success "$package is already installed"
+      echo
+    fi
+  
+  done
+  
 }
 
 function install_docker() {
