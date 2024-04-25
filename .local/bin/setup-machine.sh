@@ -182,7 +182,30 @@ function install_pyenv() {
     echo
     success "$package is already installed\n"
     info "Installing updates if available"
-    pyenv update
+    $package update
+    echo
+  fi
+}
+
+# Install Rust
+function install_rust() {
+  local package
+  package="rustup"
+
+  if ! command -v $package > /dev/null 2>&1; then
+    echo
+    info "Installing $package...\n"
+    echo
+    local install
+    install="$(mktemp)"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > "$install"
+    sh -- "$install" </dev/null
+    rm -- "$install"
+  else
+    echo
+    success "$package is already installed\n"
+    info "Installing updates if available\n"
+    $package update
     echo
   fi
 }
