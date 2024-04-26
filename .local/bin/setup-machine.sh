@@ -372,6 +372,51 @@ function install_bat() {
   fi
 }
 
+function install_fd() {
+  local package
+  package="fd"
+  local latest_version
+  latest_version="$(curl -s https://api.github.com/repos/sharkdp/fd/releases/latest | jq -r '.tag_name')"
+  latest_version="${latest_version#v}" # Remove the leading 'v'
+
+  # Check if fd is already installed
+  if ! command -v fd &>/dev/null; then
+    warning "$package is not currently installed."
+    echo
+  else
+    local installed_version
+    installed_version="$(fd --version | awk '{print $2}')"
+
+    # Compare versions
+    if [[ "$installed_version" == "$latest_version" ]]; then
+      success "$package is already up to date (version $latest_version)."
+      echo
+      return
+    fi
+
+    info "Installed $package version: $installed_version"
+    echo
+  fi
+
+  info "The latest version of $package is $latest_version."
+  echo
+  read -r -p "Do you want to install the newer version? (y/n): " choice
+  if [[ "$choice" == [Yy]* ]]; then
+    warning "Installing $package $latest_version..."
+    echo
+    local deb
+    deb="$(mktemp)"
+    curl -fsSL "https://github.com/sharkdp/fd/releases/download/v${latest_version}/fd_${latest_version}_amd64.deb" > "$deb"
+    sudo dpkg -i "$deb"
+    rm "$deb"
+    success "$package $latest_version has been installed."
+    echo
+  else
+    warning "You chose not to install the newer version."
+    echo
+  fi
+}
+
 function install_gh() {
   local package
   package="gh"
@@ -520,6 +565,7 @@ install_cargo_packages
 install_brew
 install_vscode
 install_bat
+install_fd
 install_gh
 install_eza
 install_nuget # WSL only
