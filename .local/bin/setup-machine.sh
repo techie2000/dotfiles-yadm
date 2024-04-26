@@ -79,8 +79,8 @@ function install_packages() {
     packages+=(iotop docker.io)
   fi
 
+  info "Updating apt..."
   echo
-  info "Updating apt...\n"
   sudo apt-get update
   echo
   sudo bash -c 'DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::options::=--force-confdef -o DPkg::options::=--force-confold upgrade -y'
@@ -88,19 +88,19 @@ function install_packages() {
   for package in "${packages[@]}"; do
     
     if ! command -v "$package" > /dev/null 2>&1; then
-      echo
-      info "Installing $package...\n"
+      info "Installing $package..."
       echo
       sudo apt-get install -y "$package"
-    else
       echo
-      success "$package is already installed\n"
+    else
+      success "$package is already installed"
       echo
     fi
   done
   
   echo
-  info "Cleaning up apt...\n"
+  info "Cleaning up apt..."
+  echo
   sudo apt-get autoremove -y
   sudo apt-get autoclean
   echo
@@ -118,12 +118,11 @@ function install_cargo_packages() {
   
     # Check if the binary corresponding to the package is not in the PATH and not in cargo_bin_dir
     if ! command -v "$package" &>/dev/null && ! [ -x "$cargo_bin_dir/$package" ]; then
-      echo
       info "Installing $package..."
       echo
       cargo install --locked "$package"
-    else
       echo
+    else
       success "$package is already installed"
       echo
     fi
@@ -187,8 +186,7 @@ function install_pyenv() {
   package="pyenv"
   
   if ! command -v $package > /dev/null 2>&1; then
-    echo
-    info "Installing $package...\n"
+    info "Installing $package..."
     echo
     local install
     install="$(mktemp)"
@@ -196,9 +194,10 @@ function install_pyenv() {
     bash -- "$install" </dev/null
     rm -- "$install"
   else
+    success "$package is already installed"
     echo
-    success "$package is already installed\n"
     info "Installing updates if available"
+    echo
     $package update
     echo
   fi
@@ -210,7 +209,6 @@ function install_rust() {
   package="rustup"
 
   if ! command -v $package > /dev/null 2>&1; then
-    echo
     info "Installing $package...\n"
     echo
     local install
@@ -218,10 +216,12 @@ function install_rust() {
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > "$install"
     sh -- "$install" </dev/null
     rm -- "$install"
-  else
     echo
-    success "$package is already installed\n"
-    info "Installing updates if available\n"
+  else
+    success "$package is already installed"
+    echo
+    info "Installing updates if available"
+    echo
     $package update
     echo
   fi
@@ -233,17 +233,17 @@ function install_oh-my-zsh() {
   package="oh-my-zsh"
   
   if [[ ! -d "$HOME/.$package" ]]; then
-    echo
-    info "Installing $package...\n"
+    info "Installing $package..."
     echo
     local install
     install="$(mktemp)"
     curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh > "$install"
     sh "$install" </dev/null
     rm -- "$install"
-  else
     echo
-    success "$package is already installed\n"
+  else
+    success "$package is already installed"
+    echo
   fi
 }
 
@@ -261,6 +261,7 @@ function install_oh-my-zsh_plugins() {
       info "Installing $plugin..."
       echo
       git clone https://github.com/zsh-users/"$plugin" "$plugin_path"
+      echo
     else
       success "$plugin is already installed"
       echo
@@ -280,29 +281,36 @@ function install_vscode() {
 }
 
 function install_eza() {
+  local package
+  package="eza"
   local latest_version
   latest_version="$(curl -s https://api.github.com/repos/eza-community/eza/releases/latest | jq -r '.tag_name')"
-  latest_version="${latest_version#v}" # Remove the leading 'v'
 
   # Check if eza is already installed
-  if ! command -v eza &>/dev/null; then
-    echo "eza is not currently installed."
+  if ! command -v $package &>/dev/null; then
+    warning "$package is not currently installed."
+    echo
   else
     local installed_version
-    installed_version="$(eza --version | awk '{print $2}')"
+    installed_version=$(eza --version | grep -oP 'v\d+(\.\d+)+')
 
     # Compare versions
     if [[ "$installed_version" == "$latest_version" ]]; then
-      echo "eza is already up to date (version $latest_version)."
+      success "$package is already up to date (version $latest_version)."
+      echo
       return
     fi
 
-    echo "Installed eza version: $installed_version"
+    info "Installed $package version: $installed_version"
+    echo
   fi
 
-  echo "The latest version of eza is $latest_version."
+  info "The latest version of $package is $latest_version."
+  echo
   read -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
+    warning "Installing $package $latest_version..."
+    echo
     local zip
     zip="$(mktemp)"
     curl -fsSL "https://github.com/eza-community/eza/releases/download/v${latest_version}/eza_x86_64-unknown-linux-gnu.zip" > "$zip"
@@ -311,79 +319,101 @@ function install_eza() {
     sudo chmod +x eza
     sudo chown root:root eza
     sudo mv eza /usr/local/bin/eza
-    echo "eza $latest_version has been installed."
+    success "$package $latest_version has been installed."
+    echo
   else
-    echo "You chose not to install the newer version."
+    warning "You chose not to install the newer version."
+    echo
   fi
 }
 
 function install_bat() {
+  local package
+  package="bat"
   local latest_version
   latest_version="$(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.tag_name')"
   latest_version="${latest_version#v}" # Remove the leading 'v'
 
   # Check if bat is already installed
   if ! command -v bat &>/dev/null; then
-    echo "bat is not currently installed."
+    warning "$package is not currently installed."
+    echo
   else
     local installed_version
     installed_version="$(bat --version | awk '{print $2}')"
 
     # Compare versions
     if [[ "$installed_version" == "$latest_version" ]]; then
-      echo "bat is already up to date (version $latest_version)."
+      success "$package is already up to date (version $latest_version)."
+      echo
       return
     fi
 
-    echo "Installed bat version: $installed_version"
+    info "Installed $package version: $installed_version"
+    echo
   fi
 
-  echo "The latest version of bat is $latest_version."
+  info "The latest version of $package is $latest_version."
+  echo
   read -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
+    warning "Installing $package $latest_version..."
+    echo
     local deb
     deb="$(mktemp)"
     curl -fsSL "https://github.com/sharkdp/bat/releases/download/v${latest_version}/bat_${latest_version}_amd64.deb" > "$deb"
     sudo dpkg -i "$deb"
     rm "$deb"
-    echo "bat $latest_version has been installed."
+    success "$package $latest_version has been installed."
+    echo
   else
-    echo "You chose not to install the newer version."
+    warning "You chose not to install the newer version."
+    echo
   fi
 }
 
 function install_gh() {
+  local package
+  package="gh"
   local latest_version
   latest_version="$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r '.tag_name')"
   latest_version="${latest_version#v}" # Remove the leading 'v'
 
   # Check if gh is already installed or if the installed version matches the latest version
   if ! command -v gh &>/dev/null; then
-    echo "gh is not currently installed."
+    warning "$package is not currently installed."
+    echo
   else
     local installed_version
     installed_version="$(gh --version | awk '{print $3}')"
 
     # Compare versions
     if [[ "$installed_version" == "$latest_version" ]]; then
-      echo "gh is already up to date (version $latest_version)."
+      success "$package is already up to date (version $latest_version)."
+      echo
       return
     fi
 
-    echo "Installed gh version: $installed_version"
+    info "Installed $package version: $installed_version"
+    echo
   fi
 
-  echo "The latest version of gh is $latest_version."
+  info "The latest version of $package is $latest_version."
+  echo  
   read -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
+    warning "Installing $package $latest_version..."
+    echo
     local deb
     deb="$(mktemp)"
     curl -fsSL "https://github.com/cli/cli/releases/download/v${latest_version}/gh_${latest_version}_linux_amd64.deb" > "$deb"
     sudo dpkg -i "$deb"
     rm "$deb"
-    echo "gh v$latest_version has been installed."
+    success "$package v$latest_version has been installed."
+    echo
   else
-    echo "You chose not to install the newer version."
+    warning "You chose not to install the newer version."
+    echo
   fi
 }
 
@@ -417,7 +447,8 @@ function win_install_fonts() {
   mkdir -p "$dst_dir"
   local src
   for src in "$@"; do
-    local file="$(basename "$src")"
+    local file
+    file="$(basename "$src")"
     if [[ ! -f "$dst_dir/$file" ]]; then
       cp -f "$src" "$dst_dir/"
     fi
@@ -439,7 +470,7 @@ function install_fonts() {
 function add_to_sudoers() {
   # This is to be able to create /etc/sudoers.d/"$username".
   if [[ "$USER" == *'~' || "$USER" == *.* ]]; then
-    >&2 echo "$BASH_SOURCE: invalid username: $USER"
+    >&2 warning "$BASH_SOURCE: invalid username: $USER"
     exit 1
   fi
 
@@ -469,8 +500,8 @@ function set_preferences() {
   fi
 }
 
-if [[ "$(id -u)" == 0 ]]; then
-  echo "$BASH_SOURCE: please run as non-root" >&2
+if [ "$(id -u)" -eq 0 ]; then
+  warning "$BASH_SOURCE: please run as non-root" >&2
   exit 1
 fi
 
@@ -504,10 +535,13 @@ fix_dbus
 set_preferences
 
 info "Let's sort github authentication..."
+echo
 gh auth login
 echo
 info "Let's add some github extensions"
+echo
 gh extension install dlvhdr/gh-dash
 echo
 
 success "SUCCESS - all finished"
+echo
