@@ -307,7 +307,7 @@ function install_eza() {
 
   info "The latest version of $package is $latest_version."
   echo
-  read -p "Do you want to install the newer version? (y/n): " choice
+  read -r -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     warning "Installing $package $latest_version..."
     echo
@@ -355,7 +355,7 @@ function install_bat() {
 
   info "The latest version of $package is $latest_version."
   echo
-  read -p "Do you want to install the newer version? (y/n): " choice
+  read -r -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     warning "Installing $package $latest_version..."
     echo
@@ -400,7 +400,7 @@ function install_gh() {
 
   info "The latest version of $package is $latest_version."
   echo  
-  read -p "Do you want to install the newer version? (y/n): " choice
+  read -r -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     warning "Installing $package $latest_version..."
     echo
