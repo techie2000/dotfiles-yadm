@@ -46,6 +46,7 @@ function install_packages() {
     curl
     deborphan
     fzf
+    gcc
     git
     gnome-icon-theme
     gnupg
@@ -56,6 +57,7 @@ function install_packages() {
     jsonnet
     jq
     lsb-release
+    make
     nano
     nodejs
     npm
