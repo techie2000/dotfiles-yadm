@@ -106,6 +106,17 @@ function install_packages() {
   echo
 }
 
+function install_go(){
+  local latest_version
+  latest_version=$(curl -s "https://go.dev/dl/" | grep -o 'href="[^"]*go[0-9]\+\.[0-9]\+\.[0-9]\+\.linux-amd64\.tar\.gz"' | sort -V | tail -n1 | sed 's/href="//' | sed 's/"$//')    
+  local target
+  target="$(mktemp)"
+  curl -fsSL "https://go.dev$latest_version" >"$target"
+  rm -rf /usr/local/go # Remove any previous Go installation
+  sudo tar -C /usr/local -xzf "$target"
+  rm -- "$target"
+}
+
 # Install a bunch of cargo packages.
 function install_cargo_packages() {
   local packages=(
@@ -561,6 +572,7 @@ install_pyenv
 install_rust
 install_oh-my-zsh
 install_oh-my-zsh_plugins
+install_go
 install_cargo_packages
 install_brew
 install_vscode
