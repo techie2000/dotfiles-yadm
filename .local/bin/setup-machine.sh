@@ -106,15 +106,50 @@ function install_packages() {
   echo
 }
 
-function install_go(){
+function install_go() {
+  local package
+  package="go"
   local latest_version
-  latest_version=$(curl -s "https://go.dev/dl/" | grep -o 'href="[^"]*go[0-9]\+\.[0-9]\+\.[0-9]\+\.linux-amd64\.tar\.gz"' | sort -V | tail -n1 | sed 's/href="//' | sed 's/"$//')    
-  local target
-  target="$(mktemp)"
-  curl -fsSL "https://go.dev$latest_version" >"$target"
-  rm -rf /usr/local/go # Remove any previous Go installation
-  sudo tar -C /usr/local -xzf "$target"
-  rm -- "$target"
+  latest_version=$(curl -s "https://go.dev/dl/" | grep -o 'href="[^"]*go[0-9]\+\.[0-9]\+\.[0-9]\+\.linux-amd64\.tar\.gz"' | sort -V | tail -n1 | sed 's/href="//' | sed 's/"$//' | sed 's#.*/##' | sed 's/go\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/')  
+
+  # Check if go is already installed
+  if ! command -v $package &>/dev/null; then
+    warning "$package is not currently installed."
+    echo
+  else
+    local installed_version
+    installed_version=$(go version 2>&1 | sed -E 's/[^0-9]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+
+    # Compare versions
+    if [[ "$installed_version" == "$latest_version" ]]; then
+      success "$package is already up to date (version $latest_version)."
+      echo
+      return
+    fi
+
+    info "Installed $package version: $installed_version"
+    echo
+  fi
+
+  info "The latest version of $package is $latest_version."
+  echo
+  read -r -p "Do you want to install the newer version? (y/n): " choice
+  if [[ "$choice" == [Yy]* ]]; then
+    warning "Installing $package $latest_version..."
+    echo
+    local target
+    target="$(mktemp)"
+    curl -fsSL "https://go.dev$latest_version" >"$target"
+    rm -rf /usr/local/go # Remove any previous Go installation
+    sudo tar -C /usr/local -xzf "$target"
+    rm -- "$target"
+
+    success "$package $latest_version has been installed."
+    echo
+  else
+    warning "You chose not to install the newer version."
+    echo
+  fi
 }
 
 # Install a bunch of cargo packages.
