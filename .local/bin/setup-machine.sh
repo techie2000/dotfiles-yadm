@@ -45,6 +45,7 @@ function install_packages() {
     command-not-found
     curl
     deborphan
+    fzf
     git
     gnome-icon-theme
     gnupg
@@ -65,6 +66,7 @@ function install_packages() {
     python3
     python3-pip
     qemu-guest-agent
+    shellcheck
     tree
     unrar
     unzip
