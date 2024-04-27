@@ -44,6 +44,7 @@ function install_packages() {
     ca-certificates
     command-not-found
     curl
+    deborphan
     git
     gnome-icon-theme
     gnupg
@@ -83,7 +84,15 @@ function install_packages() {
   echo
   sudo apt-get update
   echo
-  sudo bash -c 'DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::options::=--force-confdef -o DPkg::options::=--force-confold upgrade -y'
+  # DEBIAN_FRONTEND=noninteractive: suppresses any interactive prompts, allowing the command to run without user intervention.
+  # DPkg::options::=--force-confdef : resolve configuration file conflicts during package upgrades by using the package maintainer's version
+  # DPkg::options::=--force-confold : resolve configuration file conflicts during package upgrades by keeping the current version of the configuration file
+  # upgrade -y : perform a non-interactive upgrade of installed packages
+  sudo bash -c 'DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::options::=--force-confdef -o DPkg::options::=--force-confold upgrade -y' \
+    && sudo apt dist-upgrade \
+    && sudo apt autoremove \
+    && sudo apt autoclean \
+    && sudo apt clean
 
   for package in "${packages[@]}"; do
     
@@ -97,13 +106,7 @@ function install_packages() {
       echo
     fi
   done
-  
-  echo
-  info "Cleaning up apt..."
-  echo
-  sudo apt-get autoremove -y
-  sudo apt-get autoclean
-  echo
+
 }
 
 function install_go() {
@@ -255,7 +258,7 @@ function install_rust() {
   package="rustup"
 
   if ! command -v $package > /dev/null 2>&1; then
-    info "Installing $package...\n"
+    info "Installing $package..."
     echo
     local install
     install="$(mktemp)"
