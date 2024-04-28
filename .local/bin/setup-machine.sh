@@ -61,6 +61,7 @@ function install_packages() {
     nano
     nodejs
     npm
+    openssh-client
     openssh-server
     p7zip-full
     p7zip-rar
@@ -100,7 +101,7 @@ function install_packages() {
 
   for package in "${packages[@]}"; do
     
-    if ! command -v "$package" > /dev/null 2>&1; then
+    if ! dpkg -s "$package" &> /dev/null; then
       info "Installing $package..."
       echo
       sudo apt-get install -y "$package"
