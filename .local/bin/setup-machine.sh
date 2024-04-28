@@ -604,6 +604,12 @@ if [ "$(id -u)" -eq 0 ]; then
   exit 1
 fi
 
+enable_sshd() {
+  # start service automatically on boot
+  # Ubuntu/Debian : the SSH service is typically managed by the ssh service unit, not sshd, ulie centos/fedora which use sshd
+  sudo systemctl enable ssh
+}
+
 umask g-w,o-w
 
 add_to_sudoers
