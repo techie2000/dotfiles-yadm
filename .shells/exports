@@ -87,3 +87,11 @@ export TIME_STYLE=long-iso
     export PATH=/usr/local/sbin:$PATH
     source $(brew --prefix)/etc/profile.d/z.sh
 {% endif %}
+
+################################
+#    Linux
+#
+{% if yadm.os == "Linux" %}
+    # Homebrew
+    HOMEBREW_AUTO_UPDATE_SECS=86400
+{% endif %}
