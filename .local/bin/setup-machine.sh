@@ -58,6 +58,7 @@ function install_packages() {
     jq
     lsb-release
     make
+    mc
     nano
     nodejs
     npm
