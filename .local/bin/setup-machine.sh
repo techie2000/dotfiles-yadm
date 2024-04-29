@@ -147,8 +147,9 @@ function install_go() {
     echo
     local target
     target="$(mktemp)"
-    curl -fsSL "https://go.dev/dl/go$latest_version.linux-amd64.tar.gz" >"$target" \
+    wget -O "$target" "https://go.dev/dl/go$latest_version.linux-amd64.tar.gz" \
       && sudo rm -rf /usr/local/go \
+      warning "removing any remnants of previous versions if found" \
       && sudo tar -C /usr/local -xzf "$target" \
       && rm -- "$target" \
       && success "$package $latest_version has been installed." \
