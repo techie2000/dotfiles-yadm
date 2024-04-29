@@ -147,13 +147,12 @@ function install_go() {
     echo
     local target
     target="$(mktemp)"
-    curl -fsSL "https://go.dev$latest_version" >"$target"
-    rm -rf /usr/local/go # Remove any previous Go installation
-    sudo tar -C /usr/local -xzf "$target"
-    rm -- "$target"
-
-    success "$package $latest_version has been installed."
-    echo
+    curl -fsSL "https://go.dev/dl/go$latest_version.linux-amd64.tar.gz" >"$target" \
+      && sudo rm -rf /usr/local/go \
+      && sudo tar -C /usr/local -xzf "$target" \
+      && rm -- "$target" \
+      && success "$package $latest_version has been installed." \
+      && echo
   else
     warning "You chose not to install the newer version."
     echo
@@ -186,6 +185,9 @@ function install_cargo_packages() {
 }
 
 function install_docker() {
+  local package
+  package="docker"
+
   if (( WSL )); then
     local release
     release="$(lsb_release -cs)"
@@ -194,16 +196,31 @@ function install_docker() {
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu
       $release
       stable"
+    package="docker-ce"      
     sudo apt-get update -y
-    sudo apt-get install -y docker-ce
+    info "Installing $package..."
+    echo
+    sudo apt-get install -y "$package"
   else
-    sudo apt-get install -y docker.io
+    package="docker-io" 
+    info "Installing $package..."
+    echo
+    sudo apt-get install -y "$package"
   fi
+  info "Adding $USER to the docker group..."
+  echo
   sudo usermod -aG docker "$USER"
+  package="docker-compose"
+  info "Installing $package..."
+  echo
   pip3 install --user docker-compose
 }
 
 function install_brew() {
+  local package
+  package="brew"
+  info "Installing $package..."
+  echo
   local install
   install="$(mktemp)"
   curl -fsSLo "$install" https://raw.githubusercontent.com/Homebrew/install/master/install.sh
@@ -213,6 +230,10 @@ function install_brew() {
 
 # fnm = fast node manager
 function install_fnm() {
+  local package
+  package="fnm"
+  info "Installing $package..."
+  echo
   local install
   install="$(mktemp)"
   curl -fsSL https://fnm.vercel.app/install > "$install"
@@ -222,6 +243,10 @@ function install_fnm() {
 
 # nvm = node version manager
 function install_nvm() {
+  local package
+  package="nvm"
+  info "Installing $package..."
+  echo
   local install
   install="$(mktemp)"
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh > "$install"
@@ -325,6 +350,10 @@ function install_oh-my-zsh_plugins() {
  
 # Install Visual Studio Code.
 function install_vscode() {
+  local package
+  package="vscode"
+  info "Installing $package..."
+  echo
   (( !WSL )) || return 0
   ! command -v code &>/dev/null || return 0
   local deb
@@ -518,6 +547,10 @@ function install_gh() {
 
 
 function install_nuget() {
+  local package
+  package="nuget"
+  info "Installing $package..."
+  echo
   (( WSL )) || return 0
   local v="5.8.1"
   ! command -v nuget.exe &>/dev/null || [[ "$(nuget.exe help)" != "NuGet Version: $v."* ]] || return 0
@@ -562,6 +595,10 @@ function win_install_fonts() {
 
 # Install a decent monospace font.
 function install_fonts() {
+  local package
+  package="fonts"
+  info "Installing $package..."
+  echo
   (( WSL )) || return 0
   win_install_fonts ~/.local/share/fonts/NerdFonts/*.ttf
 }
@@ -573,6 +610,8 @@ function add_to_sudoers() {
     exit 1
   fi
 
+  info "Adding user $USER to sudoers..."
+  echo
   sudo usermod -aG sudo "$USER"
   sudo tee /etc/sudoers.d/"$USER" <<<"$USER ALL=(ALL) NOPASSWD:ALL" >/dev/null
   sudo chmod 440 /etc/sudoers.d/"$USER"
