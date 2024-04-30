@@ -284,9 +284,11 @@ function install_pyenv() {
     echo
     local install
     install="$(mktemp)"
-    curl https://pyenv.run > "$install"
-    bash -- "$install" </dev/null
-    rm -- "$install"
+    curl https://pyenv.run > "$install" \
+      && warning "removing any remnants of previous versions if found (~/.pyenv)" \
+      && rm -rf ~/.pyenv \
+      && bash -- "$install" </dev/null \
+      && rm -- "$install"
   else
     success "$package is already installed"
     echo
