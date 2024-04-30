@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 # :house: dotfiles-yadm
 
 source: https://github.com/techie2000/dotfiles-yadm
