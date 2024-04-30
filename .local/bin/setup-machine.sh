@@ -53,6 +53,7 @@ function install_packages() {
     gpg
     gzip
     htop
+    iotop
     inetutils-traceroute
     jsonnet
     jq
@@ -82,8 +83,6 @@ function install_packages() {
 
   if (( WSL )); then
     packages+=(dbus-x11)
-  else
-    packages+=(iotop docker.io)
   fi
 
   info "Updating apt..."
