@@ -114,6 +114,20 @@ function install_packages() {
 
 }
 
+# Install a bunch of python packages.
+function install_python_packages() {
+  local packages=(
+    hyfetch
+  )
+
+  info "Updating pip..."
+  pip install --upgrade pip
+  info "The following pip/python packages will be updated..."
+  pip list --outdated
+  pip list --outdated | awk '{print $1}' | tail -n +3 | xargs -n1 pip install -U
+
+}
+
 function install_go() {
   local package
   package="go"
@@ -655,6 +669,7 @@ umask g-w,o-w
 add_to_sudoers
 
 install_packages
+install_python_packages
 install_docker
 install_node_extras
 install_pyenv
