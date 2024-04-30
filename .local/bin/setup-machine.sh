@@ -178,6 +178,7 @@ function install_go() {
 function install_cargo_packages() {
   local packages=(
     gptcommit
+    jless
   )
 
   local cargo_bin_dir="$HOME/.cargo/bin"  # Directory where Cargo binaries are installed
