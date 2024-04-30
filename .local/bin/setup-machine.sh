@@ -57,6 +57,7 @@ function install_packages() {
     inetutils-traceroute
     jsonnet
     jq
+    jqp
     lsb-release
     make
     mc
