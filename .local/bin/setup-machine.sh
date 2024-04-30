@@ -7,21 +7,21 @@
 #####
 function info() {
   tput setaf 4
-  echo -n "$@"
+  printf "$@\n"
   tput sgr0
 }
 
 function warning() {
   tput setaf 3
   tput bold
-  echo -n "$@"
+  printf "$@\n"
   tput sgr0
   sleep 0.5
 }
 
 function success() {
   tput setaf 2
-  echo -n "$@"
+  printf "$@\n"
   tput sgr0
 }
 #####
@@ -87,9 +87,9 @@ function install_packages() {
   fi
 
   info "Updating apt..."
-  echo
+
   sudo apt-get update
-  echo
+
   # DEBIAN_FRONTEND=noninteractive: suppresses any interactive prompts, allowing the command to run without user intervention.
   # DPkg::options::=--force-confdef : resolve configuration file conflicts during package upgrades by using the package maintainer's version
   # DPkg::options::=--force-confold : resolve configuration file conflicts during package upgrades by keeping the current version of the configuration file
@@ -104,12 +104,9 @@ function install_packages() {
     
     if ! dpkg -s "$package" &> /dev/null; then
       info "Installing $package..."
-      echo
       sudo apt-get install -y "$package"
-      echo
     else
       success "$package is already installed"
-      echo
     fi
   done
 
@@ -124,7 +121,6 @@ function install_go() {
   # Check if go is already installed
   if ! command -v $package &>/dev/null; then
     warning "$package is not currently installed."
-    echo
   else
     local installed_version
     installed_version=$(go version 2>&1 | sed -E 's/[^0-9]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
@@ -132,20 +128,18 @@ function install_go() {
     # Compare versions
     if [[ "$installed_version" == "$latest_version" ]]; then
       success "$package is already up to date (version $latest_version)."
-      echo
       return
     fi
 
     info "Installed $package version: $installed_version"
-    echo
+
   fi
 
   info "The latest version of $package is $latest_version."
-  echo
+
   read -r -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     warning "Installing $package $latest_version..."
-    echo
     local target
     target="$(mktemp)"
     wget -O "$target" "https://go.dev/dl/go$latest_version.linux-amd64.tar.gz" \
@@ -153,11 +147,9 @@ function install_go() {
       warning "removing any remnants of previous versions if found" \
       && sudo tar -C /usr/local -xzf "$target" \
       && rm -- "$target" \
-      && success "$package $latest_version has been installed." \
-      && echo
+      && success "$package $latest_version has been installed."
   else
     warning "You chose not to install the newer version."
-    echo
   fi
 }
 
@@ -174,12 +166,9 @@ function install_cargo_packages() {
     # Check if the binary corresponding to the package is not in the PATH and not in cargo_bin_dir
     if ! command -v "$package" &>/dev/null && ! [ -x "$cargo_bin_dir/$package" ]; then
       info "Installing $package..."
-      echo
       cargo install --locked "$package"
-      echo
     else
       success "$package is already installed"
-      echo
     fi
   
   done
@@ -201,20 +190,16 @@ function install_docker() {
     package="docker-ce"      
     sudo apt-get update -y
     info "Installing $package..."
-    echo
     sudo apt-get install -y "$package"
   else
     package="docker-io" 
     info "Installing $package..."
-    echo
     sudo apt-get install -y "$package"
   fi
   info "Adding $USER to the docker group..."
-  echo
   sudo usermod -aG docker "$USER"
   package="docker-compose"
   info "Installing $package..."
-  echo
   pip3 install --user docker-compose
 }
 
@@ -222,7 +207,6 @@ function install_brew() {
   local package
   package="brew"
   info "Installing $package..."
-  echo
   local install
   install="$(mktemp)"
   curl -fsSLo "$install" https://raw.githubusercontent.com/Homebrew/install/master/install.sh
@@ -235,7 +219,6 @@ function install_fnm() {
   local package
   package="fnm"
   info "Installing $package..."
-  echo
   local install
   install="$(mktemp)"
   curl -fsSL https://fnm.vercel.app/install > "$install"
@@ -248,7 +231,6 @@ function install_nvm() {
   local package
   package="nvm"
   info "Installing $package..."
-  echo
   local install
   install="$(mktemp)"
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh > "$install"
@@ -268,7 +250,6 @@ function install_pyenv() {
   
   if ! command -v $package > /dev/null 2>&1; then
     info "Installing $package..."
-    echo
     local install
     install="$(mktemp)"
     curl https://pyenv.run > "$install"
@@ -276,9 +257,7 @@ function install_pyenv() {
     rm -- "$install"
   else
     success "$package is already installed"
-    echo
     info "Installing updates if available"
-    echo
     $package update
     echo
   fi
@@ -291,7 +270,6 @@ function install_rust() {
 
   if ! command -v $package > /dev/null 2>&1; then
     info "Installing $package..."
-    echo
     local install
     install="$(mktemp)"
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > "$install"
@@ -300,11 +278,8 @@ function install_rust() {
     echo
   else
     success "$package is already installed"
-    echo
     info "Installing updates if available"
-    echo
     $package update
-    echo
   fi
 }
 
@@ -315,7 +290,6 @@ function install_oh-my-zsh() {
   
   if [[ ! -d "$HOME/.$package" ]]; then
     info "Installing $package..."
-    echo
     local install
     install="$(mktemp)"
     curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh > "$install"
@@ -324,7 +298,6 @@ function install_oh-my-zsh() {
     echo
   else
     success "$package is already installed"
-    echo
   fi
 }
 
@@ -340,12 +313,9 @@ function install_oh-my-zsh_plugins() {
     plugin_path="${ZSH_CUSTOM:-${ZSH:-$HOME/.oh-my-zsh}/custom}/plugins/$plugin"
     if [[ ! -d $plugin_path ]]; then
       info "Installing $plugin..."
-      echo
       git clone https://github.com/zsh-users/"$plugin" "$plugin_path"
-      echo
     else
       success "$plugin is already installed"
-      echo
     fi
   done
 }
@@ -355,7 +325,6 @@ function install_vscode() {
   local package
   package="vscode"
   info "Installing $package..."
-  echo
   (( !WSL )) || return 0
   ! command -v code &>/dev/null || return 0
   local deb
@@ -374,7 +343,6 @@ function install_eza() {
   # Check if eza is already installed
   if ! command -v $package &>/dev/null; then
     warning "$package is not currently installed."
-    echo
   else
     local installed_version
     installed_version=$(eza --version | grep -oP 'v\d+(\.\d+)+')
@@ -382,20 +350,17 @@ function install_eza() {
     # Compare versions
     if [[ "$installed_version" == "$latest_version" ]]; then
       success "$package is already up to date (version $latest_version)."
-      echo
       return
     fi
 
     info "Installed $package version: $installed_version"
-    echo
+
   fi
 
   info "The latest version of $package is $latest_version."
-  echo
   read -r -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     warning "Installing $package $latest_version..."
-    echo
     local zip
     zip="$(mktemp)"
     curl -fsSL "https://github.com/eza-community/eza/releases/download/v${latest_version}/eza_x86_64-unknown-linux-gnu.zip" > "$zip"
@@ -405,10 +370,8 @@ function install_eza() {
     sudo chown root:root eza
     sudo mv eza /usr/local/bin/eza
     success "$package $latest_version has been installed."
-    echo
   else
     warning "You chose not to install the newer version."
-    echo
   fi
 }
 
@@ -422,7 +385,6 @@ function install_bat() {
   # Check if bat is already installed
   if ! command -v bat &>/dev/null; then
     warning "$package is not currently installed."
-    echo
   else
     local installed_version
     installed_version="$(bat --version | awk '{print $2}')"
@@ -430,30 +392,26 @@ function install_bat() {
     # Compare versions
     if [[ "$installed_version" == "$latest_version" ]]; then
       success "$package is already up to date (version $latest_version)."
-      echo
       return
     fi
 
     info "Installed $package version: $installed_version"
-    echo
+
   fi
 
   info "The latest version of $package is $latest_version."
-  echo
+  
   read -r -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     warning "Installing $package $latest_version..."
-    echo
     local deb
     deb="$(mktemp)"
     curl -fsSL "https://github.com/sharkdp/bat/releases/download/v${latest_version}/bat_${latest_version}_amd64.deb" > "$deb"
     sudo dpkg -i "$deb"
     rm "$deb"
     success "$package $latest_version has been installed."
-    echo
   else
     warning "You chose not to install the newer version."
-    echo
   fi
 }
 
@@ -467,7 +425,6 @@ function install_fd() {
   # Check if fd is already installed
   if ! command -v fd &>/dev/null; then
     warning "$package is not currently installed."
-    echo
   else
     local installed_version
     installed_version="$(fd --version | awk '{print $2}')"
@@ -475,30 +432,25 @@ function install_fd() {
     # Compare versions
     if [[ "$installed_version" == "$latest_version" ]]; then
       success "$package is already up to date (version $latest_version)."
-      echo
       return
     fi
 
     info "Installed $package version: $installed_version"
-    echo
+
   fi
 
   info "The latest version of $package is $latest_version."
-  echo
   read -r -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     warning "Installing $package $latest_version..."
-    echo
     local deb
     deb="$(mktemp)"
     curl -fsSL "https://github.com/sharkdp/fd/releases/download/v${latest_version}/fd_${latest_version}_amd64.deb" > "$deb"
     sudo dpkg -i "$deb"
     rm "$deb"
     success "$package $latest_version has been installed."
-    echo
   else
     warning "You chose not to install the newer version."
-    echo
   fi
 }
 
@@ -512,7 +464,6 @@ function install_gh() {
   # Check if gh is already installed or if the installed version matches the latest version
   if ! command -v gh &>/dev/null; then
     warning "$package is not currently installed."
-    echo
   else
     local installed_version
     installed_version="$(gh --version | awk '{print $3}')"
@@ -520,30 +471,25 @@ function install_gh() {
     # Compare versions
     if [[ "$installed_version" == "$latest_version" ]]; then
       success "$package is already up to date (version $latest_version)."
-      echo
       return
     fi
 
     info "Installed $package version: $installed_version"
-    echo
+
   fi
 
-  info "The latest version of $package is $latest_version."
-  echo  
+  info "The latest version of $package is $latest_version." 
   read -r -p "Do you want to install the newer version? (y/n): " choice
   if [[ "$choice" == [Yy]* ]]; then
     warning "Installing $package $latest_version..."
-    echo
     local deb
     deb="$(mktemp)"
     curl -fsSL "https://github.com/cli/cli/releases/download/v${latest_version}/gh_${latest_version}_linux_amd64.deb" > "$deb"
     sudo dpkg -i "$deb"
     rm "$deb"
     success "$package v$latest_version has been installed."
-    echo
   else
     warning "You chose not to install the newer version."
-    echo
   fi
 }
 
@@ -552,7 +498,7 @@ function install_nuget() {
   local package
   package="nuget"
   info "Installing $package..."
-  echo
+
   (( WSL )) || return 0
   local v="5.8.1"
   ! command -v nuget.exe &>/dev/null || [[ "$(nuget.exe help)" != "NuGet Version: $v."* ]] || return 0
@@ -600,7 +546,7 @@ function install_fonts() {
   local package
   package="fonts"
   info "Installing $package..."
-  echo
+
   (( WSL )) || return 0
   win_install_fonts ~/.local/share/fonts/NerdFonts/*.ttf
 }
@@ -613,7 +559,7 @@ function add_to_sudoers() {
   fi
 
   info "Adding user $USER to sudoers..."
-  echo
+
   sudo usermod -aG sudo "$USER"
   sudo tee /etc/sudoers.d/"$USER" <<<"$USER ALL=(ALL) NOPASSWD:ALL" >/dev/null
   sudo chmod 440 /etc/sudoers.d/"$USER"
@@ -683,13 +629,11 @@ fix_dbus
 set_preferences
 
 info "Let's sort github authentication..."
-echo
+
 gh auth login
-echo
+
 info "Let's add some github extensions"
-echo
+
 gh extension install dlvhdr/gh-dash
-echo
 
 success "SUCCESS - all finished"
-echo
