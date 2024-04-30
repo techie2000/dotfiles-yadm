@@ -1,4 +1,8 @@
+#!/bin/bash
+
 # shellcheck shell=bash
+# to prevent individual shellchecks for the whole file, add their reference number in the below line 
+# shellcheck disable=SC1,2
 
 echo "**** $HOME/.bash_functions **** starts ****"
 
@@ -105,7 +109,7 @@ f_cal() {
     REQUIRED_PKG="ncal";
     PACKAGE_NAME="ncal";
 
-    if [[ "${PERSONAL_calendar}" == "true" ]] then
+    if [[ "${PERSONAL_calendar}" == "true" ]]; then
         if isPackageInstalled "$REQUIRED_PKG"; then
             unset -f "f_$FUNCTION_NAME";
             alias "$FUNCTION_NAME"="$PACKAGE_NAME -Mwy";
@@ -481,27 +485,29 @@ function find_largest_files() {
     \du --human-readable --one-file-system --summarize ./* | sort -r -h | head -20
 }
 
-# find a file by its inum
-findi() {
-	if [ $# eq 0 ]
-		then
-			echo "Please supply an inum"
-		else
-			find . -iname "$1"
-	fi
-}
-function_installed+=("findi : find a file by its inum")
 
-# find a file/directory by its name
-findn() {
+# find a directory by its name
+findd() {
+        if [ $# -eq 0 ]
+                then
+                        echo "Please supply (part of) a directory name"
+                else
+                        find . -type d -iname "$1"
+        fi
+}
+function_installed+=("findd : find a directory by its name")
+
+
+# find a file by its name
+findf() {
         if [ $# -eq 0 ]
                 then
                         echo "Please supply (part of) a filename"
                 else
-                        find . -iname "$1"
+                        find . -type f -iname "$1"
         fi
 }
-function_installed+=("findn : find a file by its name")
+function_installed+=("findf : find a file by its filename")
 
 
 # Options (as of v0.3 RC2)
@@ -532,7 +538,7 @@ f_hardlinkMedia() {
     REQUIRED_PKG="hardlink";
     PACKAGE_NAME="hardlink";
 
-    if [[ "${PERSONAL_hardlink}" == "true" ]] then
+    if [[ "${PERSONAL_hardlink}" == "true" ]]; then
 
         if isPackageInstalled "$REQUIRED_PKG"; then
             unset -f "f_$FUNCTION_NAME";
@@ -552,7 +558,7 @@ f_hardlinkMediaDryRun() {
     REQUIRED_PKG="hardlink";
     PACKAGE_NAME="hardlink";
 
-    if [[ "${PERSONAL_hardlink}" == "true" ]] then
+    if [[ "${PERSONAL_hardlink}" == "true" ]]; then
 
         if isPackageInstalled "$REQUIRED_PKG"; then
             unset -f "f_$FUNCTION_NAME";
@@ -818,10 +824,10 @@ f_infoExternalIp
 
 
 # what's my internal IP addresses
-# f_infoInternalIp() {
+f_infoInternalIp() {
 	FUNCTION_NAME="infoInternalIp";
 	REQUIRED_PKG="ifconfig";
-	PACKAGE_NAME="ifconfig"'
+	PACKAGE_NAME="ifconfig";
 
 	if isPackageInstalled "$REQUIRED_PKG"; then
 		unset -f "f_$FUNCTION_NAME";
@@ -1060,7 +1066,7 @@ f_ls() {
 	REQUIRED_PKG="eza";
 	PACKAGE_NAME="eza";
 
-    if [[ "${PERSONAL_ls}" == "true" ]] then
+    if [[ "${PERSONAL_ls}" == "true" ]]; then
 
     	if isPackageInstalled "$REQUIRED_PKG"; then
 	    	unset -f "f_$FUNCTION_NAME";
@@ -1273,7 +1279,7 @@ trash() {
                 then
                         echo "Please supply a (single) directory/path"
                 else
-                        mv "$@" $HOME/.local/share/trash 
+                        mv "$@" "$HOME/.local/share/trash"
                         echo "Your files are in the trash ($HOME/.local/share/trash) waiting to be emptied (amd reclaim disk space)"
 
         fi

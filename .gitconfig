@@ -11,6 +11,7 @@
 [core]
 #    editor = \"C:\Program Files\Microsoft VS Code\Code.exe" --wait
     autocrlf = false
+    eol = lf
     excludesfile = ~/.gitignore_global
     longpaths = true
     safecrlf = true
@@ -69,7 +70,11 @@
     line-numbers-right-format = "{np:^4}│ "
 
 #[diff]
+#    tool = vimdiff
 #    tool = vscode
+
+[difftool]
+    prompt = false
 
 [fetch]
     prune = true
@@ -80,11 +85,16 @@
 [init]
     defaultBranch = main
 
+[log]
+    date = format:"%Y-%m-%d %H:%M"
+    decorate = full
+
 #[merge]
 #    tool = vscode
 
 #[mergetool "vscode"]
 #  cmd = code --wait $MERGED
+#   keepBackup = true
 
 [pretty]
     # https://git-scm.com/docs/pretty-formats
@@ -100,4 +110,3 @@
 
 [status]
   showUntrackedFiles = all
-
