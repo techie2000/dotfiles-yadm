@@ -210,6 +210,10 @@ if [[ "${PERSONAL_mount}" == "true" ]]; then
     fi
 fi
 
+if isPackageInstalled neowofetch; then
+    alias neofetch='neowofetch'
+fi
+
 if [[ "${PERSONAL_netstat}" == "true" ]]; then
     alias netstat="netstat -tulanp"
 fi

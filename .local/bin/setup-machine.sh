@@ -53,9 +53,11 @@ function install_packages() {
     gpg
     gzip
     htop
+    iotop
     inetutils-traceroute
     jsonnet
     jq
+    jqp
     lsb-release
     make
     mc
@@ -82,8 +84,6 @@ function install_packages() {
 
   if (( WSL )); then
     packages+=(dbus-x11)
-  else
-    packages+=(iotop docker.io)
   fi
 
   info "Updating apt..."
@@ -109,6 +109,20 @@ function install_packages() {
       success "$package is already installed"
     fi
   done
+
+}
+
+# Install a bunch of python packages.
+function install_python_packages() {
+  local packages=(
+    hyfetch
+  )
+
+  info "Updating pip..."
+  pip install --upgrade pip
+  info "The following pip/python packages will be updated..."
+  pip list --outdated
+  pip list --outdated | awk '{print $1}' | tail -n +3 | xargs -n1 pip install -U
 
 }
 
@@ -157,6 +171,7 @@ function install_go() {
 function install_cargo_packages() {
   local packages=(
     gptcommit
+    jless
   )
 
   local cargo_bin_dir="$HOME/.cargo/bin"  # Directory where Cargo binaries are installed
@@ -602,6 +617,7 @@ umask g-w,o-w
 add_to_sudoers
 
 install_packages
+install_python_packages
 install_docker
 install_node_extras
 install_pyenv
