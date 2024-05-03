@@ -955,6 +955,23 @@ infoOsVunerabilities() {
 }
 
 
+install_gpg() {
+    local key_url="$1"
+    key_filename="${key_url#*//}"           # Remove everything before //
+    key_filename="${key_filename%%/*}"      # Extract domain name
+    key_filename="${key_filename//./_}"     # Replace dots with underscores
+    key_filename="${key_filename}.gpg"      # Add .gpg extension
+
+    local keyring_dir="/usr/share/keyrings/"
+    local keyring_file="$keyring_dir$key_filename"
+
+    if ! sudo wget -qO - "$key_url" | gpg --dearmor | sudo tee "$keyring_file" > /dev/null; then
+        echo "Failed to import GPG key $key_id from $key_url"
+        return 1
+    fi
+}
+
+
 # Options (as of v0.6) :
 #  --version             show program's version number and exit
 #  -h, --help            show this help message and exit
@@ -1030,6 +1047,28 @@ isFileAvailable() {
                                         false
                         fi
        fi
+}
+
+
+is_gpg_key_installed() {
+    local key_url="$1"
+    local key_url="$1"
+    key_filename="${key_url#*//}"           # Remove everything before //
+    key_filename="${key_filename%%/*}"      # Extract domain name
+    key_filename="${key_filename//./_}"     # Replace dots with underscores
+    key_filename="${key_filename}.gpg"      # Add .gpg extension
+    
+    local keyring_dir="/usr/share/keyrings/"
+    local keyring_file="$keyring_dir$key_filename"
+
+    # Check if the key file exists in the keyring directory
+    if [[ -f "$keyring_file" ]]; then
+        true
+        echo true
+    else
+        false
+        echo false
+    fi
 }
 
 
