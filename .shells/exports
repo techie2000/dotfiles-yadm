@@ -95,5 +95,6 @@ export TIME_STYLE=long-iso
 #
 {% if yadm.os == "Linux" %}
     # Homebrew
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     HOMEBREW_AUTO_UPDATE_SECS=86400
 {% endif %}
