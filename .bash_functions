@@ -986,9 +986,6 @@ f_iotop() {
 f_iotop
 
 
-# check if a package is installed
-
-
 # check directory exists
 isDirectoryAvailable() {
         if [ $# -eq 0 ]
@@ -1002,6 +999,21 @@ isDirectoryAvailable() {
                                         false
                         fi
        fi
+}
+
+
+# check if running on a desktop environment
+isDesktop() {
+    # Check if the system is running a desktop environment
+    if command -v startx &>/dev/null; then
+        true
+        IS_DESKTOP=TRUE
+        IS_SERVER=FALSE
+    else
+        false
+        IS_DESKTOP=FALSE
+        IS_SERVER=TRUE
+    fi
 }
 
 
@@ -1034,6 +1046,21 @@ isNum() {
                                        false
                         fi
         fi
+}
+
+
+# check if running on a server environment
+isServer() {
+    # Check if the system is running a server environment
+    if ! command -v startx &>/dev/null; then
+        true
+        IS_SERVER=TRUE
+        IS_DESKTOP=FALSE
+    else
+        false
+        IS_SERVER=FALSE
+        IS_DESKTOP=TRUE
+    fi
 }
 
 
