@@ -48,6 +48,7 @@ pkg_list=(
     "htop"
     "iftop"
     "iotop"
+    "mc"
     "node-js-beautify"
     "nq"
     "postgresql"
