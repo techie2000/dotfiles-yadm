@@ -24,7 +24,7 @@ yadm reset --hard HEAD
 ```
 
 ### Check for changes in your local dotfiles
-As you use use system, you will ineevitably make changes that you may want back in the future; ID them with 
+As you use use system, you will inevitably make changes that you may want back in the future; ID them with 
 ```
 yadm diff
 ```
