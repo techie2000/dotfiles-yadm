@@ -186,6 +186,105 @@ function_installed+=("cdls : cd into a directory and list it's contents")
 #    ls
 #}
 
+configure_locale() {
+    # Default values
+    local default_language="en_GB"
+    local default_encoding="UTF-8"
+    local default_lang="en_GB"
+    local default_currency="en_GB"
+    local default_time_format="en_GB"
+
+    # Get current values
+    local current_language
+    current_language="$(locale | grep LANGUAGE | cut -d '=' -f2)"
+    local current_lang
+    current_lang="$(locale | grep '^LANG=' | cut -d '=' -f2)"
+    local current_currency
+    current_currency="$(locale | grep LC_MONETARY | cut -d '=' -f2)"
+    local current_time_format
+    current_time_format="$(locale | grep LC_TIME | cut -d '=' -f2)"
+
+    # Help function
+    show_help() {
+        printf "Usage: %s [OPTIONS]\n" "$0"
+        printf "Configure Ubuntu's language and formats.\n"
+        printf "Options:\n"
+        printf "  --language LANGUAGE       Set the system language (default: %s, current: %s)\n" "$default_language" "$current_language"
+        printf "  --encoding ENCODING       Set the system encoding (default: %s)\n" "$default_encoding"
+        printf "  --lang LANG               Set the system lang (default: %s, current: %s)\n" "$default_lang" "$current_lang"
+        printf "  --currency CURRENCY       Set the currency format (default: %s, current: %s)\n" "$default_currency" "$current_currency"
+        printf "  --time-format TIME_FORMAT Set the time format (default: %s, current: %s)\n" "$default_time_format" "$current_time_format"
+        return 0
+    }
+
+    # Error handling function
+    handle_error() {
+        local error_message="$1"
+        printf "Error: %s\n" "$error_message"
+        return 1
+    }
+
+    # Parse command line options
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+           --language)
+                language="$2"
+                shift 2
+                ;;                
+            --lang)
+                lang="$2"
+                shift 2
+                ;;
+            --encoding)
+                encoding="$2"
+                shift 2
+                ;;
+            --currency)
+                currency="$2"
+                shift 2
+                ;;
+            --time-format)
+                time_format="$2"
+                shift 2
+                ;;
+            --help)
+                show_help
+                ;;
+            *)
+                handle_error "Unknown option: $1"
+                ;;
+        esac
+    done
+
+    # Check if any options were provided
+    if [[ -z "$language" && -z "$lang" && -z "$encoding" && -z "$currency" && -z "$time_format" ]]; then
+        handle_error "No options provided, using defaults."
+    fi
+
+    # Check if required options are provided
+    if [[ -n "$1" && -z "$encoding" ]]; then
+        handle_error "Lang option provided without encoding."
+    fi
+    
+    # Assign default values if options are not provided
+    language="${language:-$default_language}"
+    encoding="${encoding:-$default_encoding}"
+    lang="${lang:-$default_lang}".$encoding
+    currency="${currency:-$default_currency}".$encoding
+    time_format="${time_format:-$default_time_format}".$encoding
+
+    # Set the system locale
+    sudo update-locale LANGUAGE="$language" LANG="$lang" LC_MONETARY="$currency" LC_TIME="$time_format"
+    
+    # Show current and updated locale settings
+    printf "Locale configuration updated:\n"
+    printf "  Language: %s (was: %s)\n" "$language" "$current_language"
+    printf "  Lang: %s (was: %s)\n" "$lang" "$current_lang"
+    printf "  Currency: %s (was: %s)\n" "$currency" "$current_currency"
+    printf "  Time format: %s (was: %s)\n" "$time_format" "$current_time_format"
+}
+
+
 # Options (as of v3.2.3)
 # --verbose, -v            increase verbosity
 # --info=FLAGS             fine-grained informational verbosity
@@ -955,6 +1054,23 @@ infoOsVunerabilities() {
 }
 
 
+install_gpg() {
+    local key_url="$1"
+    key_filename="${key_url#*//}"           # Remove everything before //
+    key_filename="${key_filename%%/*}"      # Extract domain name
+    key_filename="${key_filename//./_}"     # Replace dots with underscores
+    key_filename="${key_filename}.gpg"      # Add .gpg extension
+
+    local keyring_dir="/usr/share/keyrings/"
+    local keyring_file="$keyring_dir$key_filename"
+
+    if ! sudo wget -qO - "$key_url" | gpg --dearmor | sudo tee "$keyring_file" > /dev/null; then
+        echo "Failed to import GPG key $key_id from $key_url"
+        return 1
+    fi
+}
+
+
 # Options (as of v0.6) :
 #  --version             show program's version number and exit
 #  -h, --help            show this help message and exit
@@ -986,9 +1102,6 @@ f_iotop() {
 f_iotop
 
 
-# check if a package is installed
-
-
 # check directory exists
 isDirectoryAvailable() {
         if [ $# -eq 0 ]
@@ -1002,6 +1115,21 @@ isDirectoryAvailable() {
                                         false
                         fi
        fi
+}
+
+
+# check if running on a desktop environment
+isDesktop() {
+    # Check if the system is running a desktop environment
+    if command -v startx &>/dev/null; then
+        true
+        IS_DESKTOP=TRUE
+        IS_SERVER=FALSE
+    else
+        false
+        IS_DESKTOP=FALSE
+        IS_SERVER=TRUE
+    fi
 }
 
 
@@ -1021,6 +1149,60 @@ isFileAvailable() {
 }
 
 
+is_gpg_key_installed() {
+    local key_url="$1"
+    key_filename="${key_url#*//}"           # Remove everything before //
+    key_filename="${key_filename%%/*}"      # Extract domain name
+    key_filename="${key_filename//./_}"     # Replace dots with underscores
+    key_filename="${key_filename}.gpg"      # Add .gpg extension
+    
+    local keyring_dir="/usr/share/keyrings/"
+    local keyring_file="$keyring_dir$key_filename"
+
+    # Check if the key file exists in the keyring directory
+    if [[ -f "$keyring_file" ]]; then
+        return 0  # Key is installed
+    else
+        # Try to install the key
+        install_gpg "$key_url"
+        local install_status=$?
+
+        if [[ $install_status -eq 0 ]]; then
+            success "$keyring_file key successfully installed."
+        else
+            warning "$keyring_file failed to install key."
+        fi
+
+        return $install_status  # Return the exit status of install_gpg
+    fi
+}
+
+
+is_repository_defined() {
+    # Validate input
+    if [[ $# -ne 2 ]]; then
+        warning "Usage: is_repository_defined <source_url> <source_local_file>"
+        return 1
+    fi
+
+    local source_url="$1" # e.g."deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main"
+    local source_local_file="$2" # e.g."/etc/apt/sources.list.d/shiftkey-packages.list"
+
+    # Check if the source url already exists in the source local file
+    if ! grep -qF "$source_url" "$source_local_file"; then
+        # Add the source line to the source file
+        if ! sudo sh -c "echo \"$source_url\" >> \"$source_local_file\""; then
+            warning "Error: Failed to define repository source: $source_local_file" >&2
+            return 1
+        fi
+    fi
+
+    success "$source_local_file is defined" 
+    return 0
+}
+
+
+
 # check if string is a number
 isNum() {
         if [ $# -eq 0 ]
@@ -1034,6 +1216,21 @@ isNum() {
                                        false
                         fi
         fi
+}
+
+
+# check if running on a server environment
+isServer() {
+    # Check if the system is running a server environment
+    if ! command -v startx &>/dev/null; then
+        true
+        IS_SERVER=TRUE
+        IS_DESKTOP=FALSE
+    else
+        false
+        IS_SERVER=FALSE
+        IS_DESKTOP=TRUE
+    fi
 }
 
 

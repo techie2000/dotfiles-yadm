@@ -17,17 +17,19 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 export NVM_DIR="$HOME/.nvm"
 
 NODE_GLOBALS=(`find ~/.nvm/versions/node -maxdepth 3 -type l -wholename '*/bin/*' | xargs -n1 basename | sort | uniq`)
-NODE_GLOBALS+=(node nvm)
+NODE_GLOBALS+=(node npm npx nvm yarn)
 
 _load_nvm() {
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 }
 
+# Making node global trigger the lazy loading
 for cmd in "${NODE_GLOBALS[@]}"; do
     eval "function ${cmd}(){ unset -f ${NODE_GLOBALS[*]}; _load_nvm; unset -f _load_nvm; ${cmd} \$@; }"
 done
 unset cmd NODE_GLOBALS
+export PATH="$PATH:$HOME/.yarn/bin"```
 
 # fnm (fast node manager)
 export PATH="/root/.local/share/fnm:$PATH"
@@ -93,5 +95,6 @@ export TIME_STYLE=long-iso
 #
 {% if yadm.os == "Linux" %}
     # Homebrew
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     HOMEBREW_AUTO_UPDATE_SECS=86400
 {% endif %}

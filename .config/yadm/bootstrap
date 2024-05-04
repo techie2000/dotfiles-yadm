@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ##################################
 #   VARIABLES/CONSTANTS
@@ -28,17 +28,11 @@ export ZDOTDIR="${HOME}/.config/zsh"
 export USER_BIN_DIR="${HOME}/.local/bin"
 
 ## Colorize output.
-# shellcheck disable=SC2034
 red="\033[91m"
-# shellcheck disable=SC2034
 green="\033[92m"
-# shellcheck disable=SC2034
 blue="\033[94m"
-# shellcheck disable=SC2034
 yellow="\033[93m"
-# shellcheck disable=SC2034
 white="\033[97m"
-# shellcheck disable=SC2034
 no_color="\033[0m"
 
 
@@ -54,6 +48,7 @@ pkg_list=(
     "htop"
     "iftop"
     "iotop"
+    "mc"
     "node-js-beautify"
     "nq"
     "postgresql"
@@ -185,7 +180,7 @@ install_rust() {
 
     # Install some rust tools
     for tool in "${cargo_list[@]}"; do
-      cargo install $tool
+      cargo install "$tool"
     done
 }
 
@@ -202,12 +197,12 @@ install_nix() {
     
     if [ -f "$HOME/.config/nix/installed_packages" ]; then
         # This list created with `nix-env -qaPs|grep '^I'|awk '{print $2}' > ~/.config/nix/installed_packages`
-        cat "$HOME/.config/nix/installed_packages" | xargs nix-env -iA
+        xargs nix-env -iA < "$HOME/.config/nix/installed_packages"
     fi
     
     if [ -f "$HOME/.config/nix/installed_packages.local" ]; then
         # Additional packages that might be needed here or there
-        cat "$HOME/.config/nix/installed_packages.local" | xargs nix-env -i
+        xargs nix-env -i < "$HOME/.config/nix/installed_packages.local"
     fi
 }
 
@@ -269,7 +264,7 @@ bootstrap_zsh() {
     for file in "${zsh_dotfiles[@]}"; do
         [ -e "${HOME}/${file}" ] && rm -rf "${HOME:?}/${file}" >/dev/null 2>&1
     done
-    # Create symlinks to Zsh configuration files. Apparently this is needed.
+    # Create symlinks to Zsh configuration files. Apparently, this is needed.
     ln -sf "${ZDOTDIR}/zlogin"    "${ZDOTDIR}/.zlogin"
     ln -sf "${ZDOTDIR}/zlogout"   "${ZDOTDIR}/.zlogout"
     ln -sf "${ZDOTDIR}/zshenv"    "${ZDOTDIR}/.zshenv"
@@ -287,7 +282,7 @@ bootstrap_zsh() {
 
 bootstrap_vim() {
     print_msg "Bootstrapping Vim..."
-    # Array for Vim configuration diretcory/files.
+    # Array for Vim configuration directory/files.
     vim_dotfiles=(".vim" ".vimrc" ".viminfo")
     # Delete default Vim configuration files if present.
     for file in "${vim_dotfiles[@]}"; do

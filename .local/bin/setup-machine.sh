@@ -7,21 +7,21 @@
 #####
 function info() {
   tput setaf 4
-  printf "$@\n"
+  printf "==> $@\n"
   tput sgr0
 }
 
 function warning() {
   tput setaf 3
   tput bold
-  printf "$@\n"
+  printf "==> $@\n"
   tput sgr0
   sleep 0.5
 }
 
 function success() {
   tput setaf 2
-  printf "$@\n"
+  printf "==> $@\n"
   tput sgr0
 }
 #####
@@ -509,6 +509,49 @@ function install_gh() {
 }
 
 
+function install_gh_desktop() {
+    local package="github-desktop"
+    local key_url="https://apt.packages.shiftkey.dev/gpg.key"
+    local source_url="deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main"
+    local source_local_file="/etc/apt/sources.list.d/shiftkey-packages.list"
+    
+    if ! command -v $package &>/dev/null; then
+        warning "$package is not currently installed."
+  
+      # Check if running on a desktop environment
+      if ! isDesktop; then
+          warning "$package is a desktop application only. Server detected. $package will NOT be installed."
+          return 1
+      fi
+  
+      # Check if GPG key is installed
+      if ! is_gpg_key_installed "$key_url"; then
+          error "Failed to install GPG key for $package."
+          return 1
+      fi
+  
+      # Check if repository source is defined
+      if ! is_repository_defined "$source_url" "$source_local_file"; then
+          error "Failed to define repository source for $package."
+          return 1
+      fi
+  
+      # Install the package
+      info "Installing $package..."
+      if sudo apt update && sudo apt install -y github-desktop; then
+          success "$package has been installed successfully."
+          return 0
+      else
+          error "Failed to install $package."
+          return 1
+      fi
+      
+    else
+      success "$package is already installed."
+      return 0
+    fi
+}
+
 function install_nuget() {
   local package
   package="nuget"
@@ -631,6 +674,7 @@ install_vscode
 install_bat
 install_fd
 install_gh
+install_gh_desktop
 install_eza
 install_nuget # WSL only
 install_fonts # WSL only
