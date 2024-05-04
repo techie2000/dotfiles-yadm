@@ -190,14 +190,15 @@ configure_locale() {
     # Default values
     local default_language="en_GB"
     local default_encoding="UTF-8"
+    local default_lang="en_GB"
     local default_currency="en_GB"
     local default_time_format="en_GB"
 
     # Get current values
     local current_language
-    current_language="$(locale | grep LANG | cut -d '=' -f2)"
-    local current_encoding
-    current_encoding="$(locale | grep LC_ALL | cut -d '=' -f2)"
+    current_language="$(locale | grep LANGUAGE | cut -d '=' -f2)"
+    local current_lang
+    current_lang="$(locale | grep '^LANG=' | cut -d '=' -f2)"
     local current_currency
     current_currency="$(locale | grep LC_MONETARY | cut -d '=' -f2)"
     local current_time_format
@@ -209,10 +210,10 @@ configure_locale() {
         printf "Configure Ubuntu's language and formats.\n"
         printf "Options:\n"
         printf "  --language LANGUAGE       Set the system language (default: %s, current: %s)\n" "$default_language" "$current_language"
-        printf "  --encoding ENCODING       Set the system encoding (default: %s, current: %s)\n" "$default_encoding" "$current_encoding"
+        printf "  --encoding ENCODING       Set the system encoding (default: %s)\n" "$default_encoding"
+        printf "  --lang LANG               Set the system lang (default: %s, current: %s)\n" "$default_lang" "$current_lang"
         printf "  --currency CURRENCY       Set the currency format (default: %s, current: %s)\n" "$default_currency" "$current_currency"
         printf "  --time-format TIME_FORMAT Set the time format (default: %s, current: %s)\n" "$default_time_format" "$current_time_format"
-        shift  # Remove the --help option from the arguments list
         return 0
     }
 
@@ -226,8 +227,12 @@ configure_locale() {
     # Parse command line options
     while [[ $# -gt 0 ]]; do
         case $1 in
-            --language)
+           --language)
                 language="$2"
+                shift 2
+                ;;                
+            --lang)
+                lang="$2"
                 shift 2
                 ;;
             --encoding)
@@ -252,18 +257,33 @@ configure_locale() {
     done
 
     # Check if any options were provided
-    if [[ -z "$language" && -z "$encoding" && -z "$currency" && -z "$time_format" ]]; then
-        handle_error "No options provided."
+    if [[ -z "$language" && -z "$lang" && -z "$encoding" && -z "$currency" && -z "$time_format" ]]; then
+        handle_error "No options provided, using defaults."
     fi
 
     # Check if required options are provided
-    if [[ -n "$language" && -z "$encoding" ]]; then
-        handle_error "Language option provided without encoding."
+    if [[ -n "$1" && -z "$encoding" ]]; then
+        handle_error "Lang option provided without encoding."
     fi
+    
+    # Assign default values if options are not provided
+    language="${language:-$default_language}"
+    encoding="${encoding:-$default_encoding}"
+    lang="${lang:-$default_lang}".$encoding
+    currency="${currency:-$default_currency}".$encoding
+    time_format="${time_format:-$default_time_format}".$encoding
 
     # Set the system locale
-    sudo update-locale LANG="$language" LC_ALL="$encoding" LC_MONETARY="$currency" LC_TIME="$time_format"
+    sudo update-locale LANGUAGE="$language" LANG="$lang" LC_MONETARY="$currency" LC_TIME="$time_format"
+    
+    # Show current and updated locale settings
+    printf "Locale configuration updated:\n"
+    printf "  Language: %s (was: %s)\n" "$language" "$current_language"
+    printf "  Lang: %s (was: %s)\n" "$lang" "$current_lang"
+    printf "  Currency: %s (was: %s)\n" "$currency" "$current_currency"
+    printf "  Time format: %s (was: %s)\n" "$time_format" "$current_time_format"
 }
+
 
 # Options (as of v3.2.3)
 # --verbose, -v            increase verbosity
