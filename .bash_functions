@@ -1052,7 +1052,6 @@ isFileAvailable() {
 
 is_gpg_key_installed() {
     local key_url="$1"
-    local key_url="$1"
     key_filename="${key_url#*//}"           # Remove everything before //
     key_filename="${key_filename%%/*}"      # Extract domain name
     key_filename="${key_filename//./_}"     # Replace dots with underscores
@@ -1063,13 +1062,46 @@ is_gpg_key_installed() {
 
     # Check if the key file exists in the keyring directory
     if [[ -f "$keyring_file" ]]; then
-        true
-        echo true
+        return 0  # Key is installed
     else
-        false
-        echo false
+        # Try to install the key
+        install_gpg "$key_url"
+        local install_status=$?
+
+        if [[ $install_status -eq 0 ]]; then
+            success "$keyring_file key successfully installed."
+        else
+            warning "$keyring_file failed to install key."
+        fi
+
+        return $install_status  # Return the exit status of install_gpg
     fi
 }
+
+
+is_repository_defined() {
+    # Validate input
+    if [[ $# -ne 2 ]]; then
+        warning "Usage: is_repository_defined <source_url> <source_local_file>"
+        return 1
+    fi
+
+    local source_url="$1" # e.g."deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main"
+    local source_local_file="$2" # e.g."/etc/apt/sources.list.d/shiftkey-packages.list"
+
+    # Check if the source url already exists in the source local file
+    if ! grep -qF "$source_url" "$source_local_file"; then
+        # Add the source line to the source file
+        if ! sudo sh -c "echo \"$source_url\" >> \"$source_local_file\""; then
+            warning "Error: Failed to define repository source: $source_local_file" >&2
+            return 1
+        fi
+    fi
+
+    success "$source_local_file is defined" 
+    return 0
+}
+
 
 
 # check if string is a number
