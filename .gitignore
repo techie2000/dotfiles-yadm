@@ -1,0 +1,6 @@
+.cache/
+.local/share/yadm/repo.git/
+snap/snapd-desktop-integration/
+
+.bash_history
+.sudo_as_admin_successful
