@@ -186,6 +186,85 @@ function_installed+=("cdls : cd into a directory and list it's contents")
 #    ls
 #}
 
+configure_locale() {
+    # Default values
+    local default_language="en_GB"
+    local default_encoding="UTF-8"
+    local default_currency="en_GB"
+    local default_time_format="en_GB"
+
+    # Get current values
+    local current_language
+    current_language="$(locale | grep LANG | cut -d '=' -f2)"
+    local current_encoding
+    current_encoding="$(locale | grep LC_ALL | cut -d '=' -f2)"
+    local current_currency
+    current_currency="$(locale | grep LC_MONETARY | cut -d '=' -f2)"
+    local current_time_format
+    current_time_format="$(locale | grep LC_TIME | cut -d '=' -f2)"
+
+    # Help function
+    show_help() {
+        printf "Usage: %s [OPTIONS]\n" "$0"
+        printf "Configure Ubuntu's language and formats.\n"
+        printf "Options:\n"
+        printf "  --language LANGUAGE       Set the system language (default: %s, current: %s)\n" "$default_language" "$current_language"
+        printf "  --encoding ENCODING       Set the system encoding (default: %s, current: %s)\n" "$default_encoding" "$current_encoding"
+        printf "  --currency CURRENCY       Set the currency format (default: %s, current: %s)\n" "$default_currency" "$current_currency"
+        printf "  --time-format TIME_FORMAT Set the time format (default: %s, current: %s)\n" "$default_time_format" "$current_time_format"
+        shift  # Remove the --help option from the arguments list
+        return 0
+    }
+
+    # Error handling function
+    handle_error() {
+        local error_message="$1"
+        printf "Error: %s\n" "$error_message"
+        return 1
+    }
+
+    # Parse command line options
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --language)
+                language="$2"
+                shift 2
+                ;;
+            --encoding)
+                encoding="$2"
+                shift 2
+                ;;
+            --currency)
+                currency="$2"
+                shift 2
+                ;;
+            --time-format)
+                time_format="$2"
+                shift 2
+                ;;
+            --help)
+                show_help
+                ;;
+            *)
+                handle_error "Unknown option: $1"
+                ;;
+        esac
+    done
+
+    # Check if any options were provided
+    if [[ -z "$language" && -z "$encoding" && -z "$currency" && -z "$time_format" ]]; then
+        handle_error "No options provided."
+    fi
+
+    # Check if required options are provided
+    if [[ -n "$language" && -z "$encoding" ]]; then
+        handle_error "Language option provided without encoding."
+    fi
+
+    # Set the system locale
+    sudo update-locale LANG="$language" LC_ALL="$encoding" LC_MONETARY="$currency" LC_TIME="$time_format"
+}
+
 # Options (as of v3.2.3)
 # --verbose, -v            increase verbosity
 # --info=FLAGS             fine-grained informational verbosity
