@@ -60,6 +60,8 @@ function install_packages() {
     jsonnet
     jq
     jqp
+    libncurses5-dev
+    libssl-dev
     lsb-release
     make
     mc
@@ -81,6 +83,7 @@ function install_packages() {
     wget
     x11-utils
     zip
+    zlib1g-dev
     zsh
   )
 
