@@ -39,6 +39,7 @@ fi
 function install_packages() {
   local packages=(
     apt-transport-https
+    autoconf
     autotools-dev
     build-essential
     bzip2
