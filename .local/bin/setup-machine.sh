@@ -229,6 +229,25 @@ function install_brew() {
   rm -- "$install"
 }
 
+# Install a bunch of brew packages.
+function install_brew_packages() {
+  local packages=(
+    asn
+  )
+
+  for package in "${packages[@]}"; do
+
+    # Check if the binary corresponding to the package is not in the PATH and not in cargo_bin_dir
+    if ! command -v "$package" &>/dev/null; then
+      info "Installing $package..."
+      brew install "$package"
+    else
+      success "$package is already installed"
+    fi
+
+  done
+}
+
 # fnm = fast node manager
 function install_fnm() {
   local package
@@ -670,6 +689,7 @@ install_oh-my-zsh_plugins
 install_go
 install_cargo_packages
 install_brew
+install_brew_packages
 install_vscode
 install_bat
 install_fd
