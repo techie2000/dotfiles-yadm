@@ -39,6 +39,7 @@ fi
 function install_packages() {
   local packages=(
     apt-transport-https
+    autotools-dev
     build-essential
     bzip2
     ca-certificates
