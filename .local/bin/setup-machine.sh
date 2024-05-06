@@ -39,6 +39,8 @@ fi
 function install_packages() {
   local packages=(
     apt-transport-https
+    autoconf
+    autotools-dev
     build-essential
     bzip2
     ca-certificates
@@ -58,6 +60,8 @@ function install_packages() {
     jsonnet
     jq
     jqp
+    libncurses5-dev
+    libssl-dev
     lsb-release
     make
     mc
@@ -79,6 +83,7 @@ function install_packages() {
     wget
     x11-utils
     zip
+    zlib1g-dev
     zsh
   )
 
@@ -227,6 +232,25 @@ function install_brew() {
   curl -fsSLo "$install" https://raw.githubusercontent.com/Homebrew/install/master/install.sh
   bash -- "$install" </dev/null
   rm -- "$install"
+}
+
+# Install a bunch of brew packages.
+function install_brew_packages() {
+  local packages=(
+    asn
+  )
+
+  for package in "${packages[@]}"; do
+
+    # Check if the binary corresponding to the package is not in the PATH and not in cargo_bin_dir
+    if ! command -v "$package" &>/dev/null; then
+      info "Installing $package..."
+      brew install "$package"
+    else
+      success "$package is already installed"
+    fi
+
+  done
 }
 
 # fnm = fast node manager
@@ -670,6 +694,7 @@ install_oh-my-zsh_plugins
 install_go
 install_cargo_packages
 install_brew
+install_brew_packages
 install_vscode
 install_bat
 install_fd
