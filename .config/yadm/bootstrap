@@ -401,12 +401,6 @@ update_yadm_repo() {
 
 print_header
 
-# install node if it's missing
-if ! command -v node >/dev/null 2>&1; then
-    echo "Install latest Nodejs lts"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-fi
-
 
 ##################################
 #   Linux
@@ -435,6 +429,24 @@ if [ "$system_type" = "Darwin" ]; then
         brew bundle --global
     fi
     
+fi
+
+
+##################################
+#   Global
+#   reqired to run after package installs to ensure th likes of curl are installed
+
+print_header
+
+# install node if it's missing
+if ! command -v node >/dev/null 2>&1; then
+    echo "Install nvm"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+fi
+
+if ! command -v nvm >/dev/null 2>&1; then
+    echo "Install Node.js lts"
+    nvm install 20
 fi
 
 
