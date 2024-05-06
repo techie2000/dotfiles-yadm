@@ -178,12 +178,11 @@ install_rust() {
     if ! command -v rustc >/dev/null 2>&1; then
         echo "Installing rust"
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    fi
 
-    if [ -f "$HOME/.cargo/env" ]; then
-       source "$HOME/.cargo/env"
-    else
-        echo "Error: $HOME/.cargo/env not found."
+        if [ -f "$HOME/.cargo/env" ]; then
+            source "$HOME/.cargo/env"
+        fi
+
     fi
 
     # Install some rust tools
