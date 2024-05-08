@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+source "$HOME/.config/yadm/bootstrap.d/000_core/220_function_installs"
+source "$HOME/.config/yadm/bootstrap.d/000_preferences/090_define_linux_package_list"
+
+print_script_name
+
+##################################
+#   pac_install()
+
+pac_install() {
+    print_msg "Updating package database..."
+    sudo pacman -Sy
+    # Specify Arch based distribution specific GVim package.
+    vim_gui_pkg="gvim"
+    install_vim
+    print_msg "Installing package dependencies..."
+    sudo pacman -S --noconfirm "${linux_pkg_list[@]}"
+}

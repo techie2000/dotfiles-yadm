@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   font_options()
+
+font_options() {
+    echo -e "${yellow}
+  Options for font installation.${no_color}
+    " >&1
+    echo -e "${yellow}  1)${white} None. Do not install any fonts.${no_color}" >&1
+    echo -e "${yellow}  2)${white} Basic. Install only the 'Nerd Fonts Source Code Pro' font family.${no_color}" >&1
+    echo -e "${yellow}  3)${white} Complete. Install the complete collection of 'Nerd Fonts'.${no_color}" >&1
+    echo
+}
+
+##################################
+#   install_fonts()
+
+install_fonts() {
+    font_options
+    while [ -z "${font_option}" ]; do
+        echo -en "${white}  Option${yellow} [1/2/3]${white}: ${no_color}"
+        read -r opt < /dev/tty
+        echo
+        case "${opt}" in
+            [1]*) font_option=1 ;;
+            [2]*) font_option=2; font_name="SourceCodePro" font_dir="${XDG_DATA_HOME}/fonts/${font_name}" \
+            font_dl_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v2.2.2/${font_name}.zip" ;;
+            [3]*) font_option=3; font_name="NerdFonts" font_dl_url="https://github.com/ryanoasis/nerd-fonts.git" ;;
+            *) echo -e "Invalid option '${opt}'." >&2; font_options ;;
+        esac
+    done
+    if [ "${font_option}" = 1 ]; then
+        print_msg "Skipping font installation..."
+        elif [ "${font_option}" = 2 ]; then
+        # Create font directory if it does not exist.
+        mkdir -p "${font_dir}"
+        print_msg "Downloading '${font_name}' fonts..."
+        # Download font family and extract excluding Windows compatible fonts.
+        curl -fLo "${temp_file}" "${font_dl_url}" --progress-bar
+        print_msg "Installing fonts..."
+        unzip -q "${temp_file}" -x "*Windows*" -d "${temp_dir}"
+        cp "${temp_dir}"/*.ttf "${font_dir}"
+        fc-cache -f -v >/dev/null 2>&1
+        elif [ "${font_option}" = 3 ]; then
+        print_msg "Downloading '$font_name'..."
+        # Install the complete Nerd Fonts font collection.
+        git clone --depth 1 "${font_dl_url}" "${temp_dir}/${font_name}"
+        print_msg "Installing fonts..."
+        "${temp_dir}/${font_name}/install.sh" --quiet >/dev/null 2>&1
+    fi
+}

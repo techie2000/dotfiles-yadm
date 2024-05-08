@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+source "$HOME/.config/yadm/bootstrap.d/000_core/220_function_installs"
+source "$HOME/.config/yadm/bootstrap.d/000_preferences/090_define_linux_package_list"
+
+print_script_name
+
+##################################
+#   deb_install()
+
+deb_install() {
+    print_msg "Updating package database..."
+    sudo apt-get update 
+    print_msg "Upgrading packages..."
+    sudo apt upgrade -y
+
+    # Remove 'thefuck' from pkg_list. Will be installed using pip instead.
+    pkg_list=("${linux_pkg_list[@]/thefuck}")
+
+    # Specify Debian/Ubuntu based distribution specific GVim package.
+    vim_gui_pkg="vim-gtk3"
+    install_vim
+
+    print_msg "Installing packages (and dependencies)..."
+    sudo apt install --yes "${linux_pkg_list[@]}"
+
+    print_msg "Instaling node stuff..."
+    install_node
+
+    print_msg "Installing rust..."
+    install_rust
+
+    print_msg "Installing nix"
+    install_nix
+
+    print_msg "Installing thefuck"
+    install_thefuck
+}

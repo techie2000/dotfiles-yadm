@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   install_fnm()
+# fnm = fast node manager
+function install_fnm() {
+  local package
+  package="fnm"
+  info "Installing $package..."
+  local install
+  install="$(mktemp)"
+  curl -fsSL https://fnm.vercel.app/install > "$install"
+  bash -- "$install" </dev/null
+  rm -- "$install"
+}
+
+##################################
+#   install_nvm()
+# nvm = node version manager
+function install_nvm() {
+  local package
+  package="nvm"
+  info "Installing $package..."
+  local install
+  install="$(mktemp)"
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh > "$install"
+  bash -- "$install" </dev/null
+  rm -- "$install"
+}
+
+##################################
+#   install_node()
+install_node() {
+  install_fnm
+  install_nvm
+}

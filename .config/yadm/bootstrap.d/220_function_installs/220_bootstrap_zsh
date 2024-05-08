@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   botstrap_zsh()
+
+bootstrap_zsh() {
+    print_msg "Bootstrapping Zsh..."
+    # Array for Zsh configuration directory/files.
+    zsh_dotfiles=(".zsh" ".zlogin" ".zlogout" ".zprofile" ".zshenv" ".zshrc")
+    # Delete default Zsh configuration files if present.
+    for file in "${zsh_dotfiles[@]}"; do
+        [ -e "${HOME}/${file}" ] && rm -rf "${HOME:?}/${file}" >/dev/null 2>&1
+    done
+    # Create symlinks to Zsh configuration files. Apparently, this is needed.
+    ln -sf "${ZDOTDIR}/zlogin"    "${ZDOTDIR}/.zlogin"
+    ln -sf "${ZDOTDIR}/zlogout"   "${ZDOTDIR}/.zlogout"
+    ln -sf "${ZDOTDIR}/zshenv"    "${ZDOTDIR}/.zshenv"
+    ln -sf "${ZDOTDIR}/zshrc"     "${ZDOTDIR}/.zshrc"
+    print_msg "Set Zsh as default shell..."
+    # Set default shell to Zsh.
+    sudo chsh -s "$(command -v zsh)"
+    print_msg "Adding system-wide Zsh configuration options..."
+    # Set path to Zsh configuration files (system-wide configuration). We want
+    # to do this to avoid as many dotfiles as possible in user home directory.
+    # shellcheck disable=SC2016
+    echo 'export ZDOTDIR="${HOME}/.config/zsh"' | \
+    sudo tee --append /etc/zsh/zshenv >/dev/null 2>&1
+}

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+##################################
+#   Linux
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+source "$HOME/.config/yadm/bootstrap.d/000_core/210_function_package_manager"
+
+print_script_name
+
+if [ "$system_type" = "Linux" ]; then
+
+    install_pkgs
+    bootstrap_zsh
+    bootstrap_vim
+    install_fonts
+
+fi

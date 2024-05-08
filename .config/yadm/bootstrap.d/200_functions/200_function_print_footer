@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+##################################
+#   print_footer()
+
+print_footer() {
+  echo -e "${blue}
+  Bootstrap of dotfiles completed!${yellow}
+  Log out${blue} and${yellow} login${blue} to apply changes!${white}
+
+  See README for more information;
+  ${git_url}${git_repo}/.github/README.md${no_color}
+    " >&1
+}

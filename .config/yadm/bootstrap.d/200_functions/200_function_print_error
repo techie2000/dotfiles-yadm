@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+##################################
+#   print_error()
+
+print_error() {
+    echo -e "${red}=> ERROR:${no_color}${white}" "${@}" "${no_color}" >&2
+}

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+##################################
+#   print_script_name()
+
+print_script_name() {
+    script_name=$(basename "$0")
+    print_msg "Running script: $script_name"
+}

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+##################################
+#   print_header()
+
+print_header() {
+  echo -e "${blue}
+       _     _   ___ _ _
+     _| |___| |_|  _|_| |___ ___
+   _| . | . |  _|  _| | | -_|_ -|
+  |_|___|___|_| |_| |_|_|___|___|${yellow}
+  BOOTSTRAP SCRiPT${white}
+
+  ${git_url}${git_repo}${no_color}
+    " >&1
+}

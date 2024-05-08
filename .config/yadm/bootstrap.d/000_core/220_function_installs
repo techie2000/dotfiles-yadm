@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+for file in "$HOME/.config/yadm/bootstrap.d/220_function_installs/"*; do
+    [ -r "$file" ] && source "$file"
+done
+unset file

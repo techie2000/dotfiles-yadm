@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   install_nix()
+
+install_nix() {
+
+    install_nix_bin() {
+        curl -L https://nixos.org/nix/install | sh
+        if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+            . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+        fi
+    }
+
+    command -v nix >/dev/null 2>&1 || install_nix_bin
+
+    if [ -f "$HOME/.config/nix/installed_packages" ]; then
+        # This list created with `nix-env -qaPs|grep '^I'|awk '{print $2}' > ~/.config/nix/installed_packages`
+        xargs nix-env -iA < "$HOME/.config/nix/installed_packages"
+    fi
+
+    if [ -f "$HOME/.config/nix/installed_packages.local" ]; then
+        # Additional packages that might be needed here or there
+        xargs nix-env -i < "$HOME/.config/nix/installed_packages.local"
+    fi
+}
+

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   update_yadm_repo()
+
+update_yadm_repo() {
+    print_msg "Updating the yadm repo origin URL..."
+    yadm remote set-url origin "git@${git_host}:${git_user}/${git_repo}.git"
+}

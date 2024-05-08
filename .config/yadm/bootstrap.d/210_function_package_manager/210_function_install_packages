@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   install_pkgs()
+
+install_pkgs() {
+    # Operating system identification. For more information, see
+    # https://www.freedesktop.org/software/systemd/man/os-release.html
+    if [[ "${OSTYPE}" = linux-gnu* ]]; then
+        # shellcheck disable=SC1091
+        [ -f "/etc/os-release" ] && source /etc/os-release
+        case "${NAME}" in
+            *Arch*)
+                print_msg "Operating system identified as '$NAME'.";
+                pac_install
+            ;;
+            *Manjaro*)
+                print_msg "Operating system identified as '$NAME'.";
+                pac_install
+            ;;
+            *Chakra*)
+                print_msg "Operating system identified as '$NAME'.";
+                pac_install
+            ;;
+            *Ubuntu*)
+                print_msg "Operating system identified as '$NAME'.";
+                deb_install
+            ;;
+            *Debian*)
+                print_msg "Operating system identified as '$NAME'.";
+                deb_install && install_rust && install_nix && install_thefuck
+            ;;
+            *Mint*)
+                print_msg "Operating system identified as '$NAME'.";
+                deb_install && install_rust && install_nix && install_thefuck
+            ;;
+            *neon*)
+                print_msg "Operating system identified as '$NAME'.";
+                deb_install && install_rust && install_nix && install_thefuck
+            ;;
+            *Raspbian*)
+                print_msg "Operating system identified as '$NAME'.";
+                deb_install && install_rust && install_nix && install_thefuck
+            ;;
+            *)
+                print_error "Unable to identify operating system! Could not install packages...";
+                exit 1
+            ;;
+        esac
+    else
+        print_error "Unsupported operating system! Could not install packages..."
+        exit 1
+    fi
+}

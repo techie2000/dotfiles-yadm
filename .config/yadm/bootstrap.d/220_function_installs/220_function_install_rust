@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   install_rust()
+
+install_rust() {
+    
+    if ! command -v rustc >/dev/null 2>&1; then
+        echo "Installing rust"
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+        if [ -f "$HOME/.cargo/env" ]; then
+            source "$HOME/.cargo/env"
+        fi
+
+    fi
+
+    # Install some rust tools
+    for tool in "${cargo_list[@]}"; do
+      cargo install "$tool"
+    done
+}

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for file in "$HOME/.config/yadm/bootstrap.d/200_functions/"*; do
+    [ -r "$file" ] && source "$file"
+done
+unset file

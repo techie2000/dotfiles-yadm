@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   vim_options()
+
+vim_options() {
+    echo -e "${yellow}
+  Options for Vim installation.${no_color}
+    " >&1
+    echo -e "${yellow}  1)${white} Basic. Install standard Vim package.${no_color}" >&1
+    echo -e "${yellow}  2)${white} GUI. Install Vim with GTK3 GUI.${no_color}" >&1
+    echo
+}
+
+##################################
+#   install_vim()
+
+install_vim() {
+    # Check if Xorg display server is installed. If true, offer Vim installation
+    # options.
+    if [[ -e $(command -v Xorg) || -e $(command -v startx) ]]; then
+        vim_options
+        while [ -z "${vim_option}" ]; do
+            echo -en "${white}  Option${yellow} [1/2]${white}: ${no_color}"
+            read -r opt < /dev/tty
+            echo
+            case "${opt}" in
+                [1]*) vim_option=1 ;;
+                [2]*) vim_option=2 ;;
+                *) echo -e "Invalid option '${opt}'." >&2; vim_options ;;
+            esac
+        done
+        if [ "${vim_option}" = 2 ]; then
+            # Replace standard Vim package with GTK3 GUI version.
+            pkg_list=("${pkg_list[@]/vim/$vim_gui_pkg}")
+        fi
+    fi
+}

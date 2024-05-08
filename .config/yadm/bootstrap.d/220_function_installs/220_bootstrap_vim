@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   bootstrap_vim()
+
+bootstrap_vim() {
+    print_msg "Bootstrapping Vim..."
+    # Array for Vim configuration directory/files.
+    vim_dotfiles=(".vim" ".vimrc" ".viminfo")
+    # Delete default Vim configuration files if present.
+    for file in "${vim_dotfiles[@]}"; do
+        [ -e "${HOME}/${file}" ] && rm -rf "${HOME:?}/${file}" >/dev/null 2>&1
+    done
+    # Create viminfo file to avoid errors from startify plugin.
+    mkdir -p "${XDG_DATA_HOME}/vim" && touch "${XDG_DATA_HOME}/vim/viminfo"
+    print_msg "Installing vim-plug..."
+    # Install vim-plug and plugins.
+#    This is not working as expeted so ignored for now
+#    [ ! -e "${XDG_CONFIG_HOME}/vim/autoload/plug.vim" ] && \
+#    curl -fLo "${XDG_CONFIG_HOME}/vim/autoload/plug.vim" --create-dirs \
+#    "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" --progress-bar && \
+#    vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
+}

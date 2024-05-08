@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+# Because Git submodule commands cannot operate without a work tree, they must
+# be run from within $HOME (assuming this is the root of your dotfiles)
+(
+  cd "$HOME" || exit 1
+
+  print_msg "Init submodules"
+  yadm submodule update --recursive --init
+)

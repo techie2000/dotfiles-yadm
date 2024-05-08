@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+##################################
+#   VARIABLES/CONSTANTS
+
+system_type=$(uname -s)
+
+# Variables for dotfiles repo.
+git_host="github.com"
+git_user="techie2000"
+git_repo="dotfiles-yadm"
+git_url="https://${git_host}/${git_user}/"
+
+# Variables for temporary files/directories.
+temp_file="$(mktemp -u)"
+temp_dir="$(mktemp -d)"
+
+# Set XDG directories.
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_CACHE_HOME="${HOME}/.cache"
+export XDG_DATA_HOME="${HOME}/.local/share"
+
+# Set Zsh configuration directory.
+export ZDOTDIR="${HOME}/.config/zsh"
+
+# Set Vim configuration directory.
+export VIMINIT=":source $XDG_CONFIG_HOME/vim/vimrc"
+
+# Set user bin directory.
+export USER_BIN_DIR="${HOME}/.local/bin"
+
+## Colorize output.
+red="\033[91m"
+green="\033[92m"
+blue="\033[94m"
+yellow="\033[93m"
+white="\033[97m"
+no_color="\033[0m"

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+for file in "$HOME/.config/yadm/bootstrap.d/210_function_package_manager/"*; do
+    [ -r "$file" ] && source "$file"
+done
+unset file
