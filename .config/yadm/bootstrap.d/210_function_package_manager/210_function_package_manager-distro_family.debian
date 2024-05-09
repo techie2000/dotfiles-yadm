@@ -13,10 +13,22 @@ print_script_name
 #   deb_install()
 
 deb_install() {
-    print_msg "Updating package database..."
+
+    info "Current function: ${FUNCNAME[1]}"
+
+    info "Updating package database..."
     sudo apt-get update 
-    print_msg "Upgrading packages..."
-    sudo apt upgrade -y
+
+info "Upgrading packages and resolving conflicts..."
+    # DEBIAN_FRONTEND=noninteractive: suppresses any interactive prompts, allowing the command to run without user intervention.
+    # DPkg::options::=--force-confdef : resolve configuration file conflicts during package upgrades by using the package maintainer's version
+    # DPkg::options::=--force-confold : resolve configuration file conflicts during package upgrades by keeping the current version of the configuration file
+    # upgrade -y : perform a non-interactive upgrade of installed packages
+    sudo bash -c 'DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::options::=--force-confdef -o DPkg::options::=--force-confold upgrade -y' \
+      && sudo apt dist-upgrade \
+      && sudo apt autoremove \
+      && sudo apt autoclean \
+      && sudo apt clean
 
     # Remove 'thefuck' from pkg_list. Will be installed using pip instead.
     pkg_list=("${linux_pkg_list[@]/thefuck}")
@@ -25,18 +37,35 @@ deb_install() {
     vim_gui_pkg="vim-gtk3"
     install_vim
 
-    print_msg "Installing packages (and dependencies)..."
-    sudo apt install --yes "${linux_pkg_list[@]}"
+    info "Installing packages (and dependencies)..."
+    for package in "${linux_pkg_list[@]}"; do
 
-    print_msg "Instaling node stuff..."
-    install_node
+      if ! dpkg -s "$package" &> /dev/null; then
+        info "Installing $package..."
+        sudo apt install --yes  "$package"
+      else
+        success "$package is already installed"
+      fi
+    done
 
-    print_msg "Installing rust..."
+#    print_msg "Instaling node stuff..."
+#    install_node
+
+    info "Installing rust..."
     install_rust
 
-    print_msg "Installing nix"
+    info "Installing nix..."
     install_nix
 
-    print_msg "Installing thefuck"
+    info "Installing thefuck..."
     install_thefuck
+
+    info "Installing brew..."
+    install_brew
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    install_brew_packages
+
+    info "Installing python packages"
+    install_pyenv
+    install_python_packages
 }

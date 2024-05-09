@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+##################################
+#   is_desktop()
+
+# check if running on a desktop environment
+is_desktop() {
+
+    info "Current function: ${FUNCNAME[1]}"
+
+    # Check if the system is running a desktop environment
+    if command -v startx &>/dev/null; then
+        true
+        readonly IS_DESKTOP=TRUE
+        readonly IS_SERVER=FALSE
+    else
+        false
+        readonly IS_DESKTOP=FALSE
+        readonly IS_SERVER=TRUE
+    fi
+}

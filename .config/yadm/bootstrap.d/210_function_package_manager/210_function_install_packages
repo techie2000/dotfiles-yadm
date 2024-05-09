@@ -11,6 +11,9 @@ print_script_name
 #   install_pkgs()
 
 install_pkgs() {
+
+    info "Current function: ${FUNCNAME[1]}"
+
     # Operating system identification. For more information, see
     # https://www.freedesktop.org/software/systemd/man/os-release.html
     if [[ "${OSTYPE}" = linux-gnu* ]]; then

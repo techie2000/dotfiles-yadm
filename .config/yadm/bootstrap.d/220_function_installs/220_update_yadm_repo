@@ -11,6 +11,6 @@ print_script_name
 #   update_yadm_repo()
 
 update_yadm_repo() {
-    print_msg "Updating the yadm repo origin URL..."
+    info "Updating the yadm repo origin URL..."
     yadm remote set-url origin "git@${git_host}:${git_user}/${git_repo}.git"
 }

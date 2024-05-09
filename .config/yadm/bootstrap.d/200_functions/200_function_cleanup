@@ -8,6 +8,9 @@ set -o errexit
 #   cleanup_options()
 
 cleanup_options() {
+
+    info "Current function: ${FUNCNAME[1]}"
+
     echo -e "${yellow}
   Cleanup home directory?${no_color}
     " >&1
@@ -20,6 +23,9 @@ cleanup_options() {
 #   cleanup_home()
 
 cleanup_home() {
+
+    info "Current function: ${FUNCNAME[1]}" 
+
     # Array for common dotfiles.
     dotfiles=(
         ".bash_history" ".bash_logout" ".bash_profile" ".bashrc" \
@@ -27,6 +33,7 @@ cleanup_home() {
         ".profile" ".vim" ".viminfo" ".vimrc" ".zlogin" ".zlogout" ".zprofile" \
         ".zshenv" ".zshrc" ".wget-hsts"
     )
+
     found=0 # Set to 1 if file found in the for loop.
     # Find any pre-esisting dotfiles.
     for file in "${dotfiles[@]}"; do
@@ -34,6 +41,7 @@ cleanup_home() {
             found=1; break
         fi
     done
+
     # If true, offer to cleanup home directory.
     if [ "${found}" = 1 ]; then
         cleanup_options
@@ -47,6 +55,7 @@ cleanup_home() {
                 *) echo -e "Invalid option '${opt}'." >&2; cleanup_options ;;
             esac
         done
+
         if [ "${cleanup_option}" = 1 ]; then
             print_msg "Cleaning home directory..."
             # Cleanup user's home directory.
@@ -61,5 +70,8 @@ cleanup_home() {
 #   cleanup_tmp()
 
 cleanup_tmp() {
+
+    info "Current function: ${FUNCNAME[1]}"
+
     rm -rf "${temp_file}" "${temp_dir}"
 }

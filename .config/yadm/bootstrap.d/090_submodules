@@ -12,6 +12,6 @@ print_script_name
 (
   cd "$HOME" || exit 1
 
-  print_msg "Init submodules"
+  info "Init submodules"
   yadm submodule update --recursive --init
 )

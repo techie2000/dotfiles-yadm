@@ -12,7 +12,10 @@ print_script_name
 
 # Only used on Debian/Ubuntu based distributions.
 install_thefuck() {
-    print_msg "Installing thefuck using pip..."
+
+    info "Current function: ${FUNCNAME[1]}"
+
+    info "Installing thefuck using pip..."
     sudo apt install --yes python3-dev python3-pip python3-setuptools
     pip3 install thefuck --user
 }

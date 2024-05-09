@@ -2,134 +2,7 @@
 #
 # Sets up environment. Can be run multiple times.
 
-#####
-##### reusable functions 
-#####
-function info() {
-  tput setaf 4
-  printf "==> $@\n"
-  tput sgr0
-}
 
-function warning() {
-  tput setaf 3
-  tput bold
-  printf "==> $@\n"
-  tput sgr0
-  sleep 0.5
-}
-
-function success() {
-  tput setaf 2
-  printf "==> $@\n"
-  tput sgr0
-}
-#####
-##### reusable functions ends
-#####
-
-
-if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
-  readonly WSL=1
-else
-  readonly WSL=0
-fi
-
-# Install a bunch of debian packages.
-function install_packages() {
-  local packages=(
-    apt-transport-https
-    autoconf
-    autotools-dev
-    build-essential
-    bzip2
-    ca-certificates
-    command-not-found
-    curl
-    deborphan
-    fzf
-    gcc
-    git
-    gnome-icon-theme
-    gnupg
-    gpg
-    gzip
-    htop
-    iotop
-    inetutils-traceroute
-    jsonnet
-    jq
-    jqp
-    libncurses5-dev
-    libssl-dev
-    lsb-release
-    make
-    mc
-    nano
-    nodejs
-    npm
-    openssh-client
-    openssh-server
-    p7zip-full
-    p7zip-rar
-    perl
-    python3
-    python3-pip
-    qemu-guest-agent
-    shellcheck
-    tree
-    unrar
-    unzip
-    wget
-    x11-utils
-    zip
-    zlib1g-dev
-    zsh
-  )
-
-  if (( WSL )); then
-    packages+=(dbus-x11)
-  fi
-
-  info "Updating apt..."
-
-  sudo apt-get update
-
-  # DEBIAN_FRONTEND=noninteractive: suppresses any interactive prompts, allowing the command to run without user intervention.
-  # DPkg::options::=--force-confdef : resolve configuration file conflicts during package upgrades by using the package maintainer's version
-  # DPkg::options::=--force-confold : resolve configuration file conflicts during package upgrades by keeping the current version of the configuration file
-  # upgrade -y : perform a non-interactive upgrade of installed packages
-  sudo bash -c 'DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::options::=--force-confdef -o DPkg::options::=--force-confold upgrade -y' \
-    && sudo apt dist-upgrade \
-    && sudo apt autoremove \
-    && sudo apt autoclean \
-    && sudo apt clean
-
-  for package in "${packages[@]}"; do
-    
-    if ! dpkg -s "$package" &> /dev/null; then
-      info "Installing $package..."
-      sudo apt-get install -y "$package"
-    else
-      success "$package is already installed"
-    fi
-  done
-
-}
-
-# Install a bunch of python packages.
-function install_python_packages() {
-  local packages=(
-    hyfetch
-  )
-
-  info "Updating pip..."
-  pip install --upgrade pip
-  info "The following pip/python packages will be updated..."
-  pip list --outdated
-  pip list --outdated | awk '{print $1}' | tail -n +3 | xargs -n1 pip install -U
-
-}
 
 function install_go() {
   local package
@@ -223,35 +96,6 @@ function install_docker() {
   pip3 install --user docker-compose
 }
 
-function install_brew() {
-  local package
-  package="brew"
-  info "Installing $package..."
-  local install
-  install="$(mktemp)"
-  curl -fsSLo "$install" https://raw.githubusercontent.com/Homebrew/install/master/install.sh
-  bash -- "$install" </dev/null
-  rm -- "$install"
-}
-
-# Install a bunch of brew packages.
-function install_brew_packages() {
-  local packages=(
-    asn
-  )
-
-  for package in "${packages[@]}"; do
-
-    # Check if the binary corresponding to the package is not in the PATH and not in cargo_bin_dir
-    if ! command -v "$package" &>/dev/null; then
-      info "Installing $package..."
-      brew install "$package"
-    else
-      success "$package is already installed"
-    fi
-
-  done
-}
 
 # fnm = fast node manager
 function install_fnm() {
@@ -282,25 +126,7 @@ install_node_extras() {
   install_nvm
 }
 
-# pyenv = python version manager
-function install_pyenv() {
-  local package
-  package="pyenv"
-  
-  if ! command -v $package > /dev/null 2>&1; then
-    info "Installing $package..."
-    local install
-    install="$(mktemp)"
-    curl https://pyenv.run > "$install"
-    bash -- "$install" </dev/null
-    rm -- "$install"
-  else
-    success "$package is already installed"
-    info "Installing updates if available"
-    $package update
-    echo
-  fi
-}
+
 
 # Install Rust
 function install_rust() {
@@ -684,7 +510,6 @@ umask g-w,o-w
 add_to_sudoers
 
 install_packages
-install_python_packages
 install_docker
 install_node_extras
 install_pyenv

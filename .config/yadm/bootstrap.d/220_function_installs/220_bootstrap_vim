@@ -11,6 +11,9 @@ print_script_name
 #   bootstrap_vim()
 
 bootstrap_vim() {
+
+    info "Current function: ${FUNCNAME[1]}"
+
     print_msg "Bootstrapping Vim..."
     # Array for Vim configuration directory/files.
     vim_dotfiles=(".vim" ".vimrc" ".viminfo")
@@ -18,6 +21,7 @@ bootstrap_vim() {
     for file in "${vim_dotfiles[@]}"; do
         [ -e "${HOME}/${file}" ] && rm -rf "${HOME:?}/${file}" >/dev/null 2>&1
     done
+
     # Create viminfo file to avoid errors from startify plugin.
     mkdir -p "${XDG_DATA_HOME}/vim" && touch "${XDG_DATA_HOME}/vim/viminfo"
     print_msg "Installing vim-plug..."

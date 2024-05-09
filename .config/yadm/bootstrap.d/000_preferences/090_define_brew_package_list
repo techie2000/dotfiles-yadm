@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+##################################
+#   Brew Package List
+
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+brew_packages_list=(
+    "asn"
+    "gcc"
+    "noahgorstein/tap/jqp"
+)

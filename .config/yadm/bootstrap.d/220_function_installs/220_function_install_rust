@@ -11,7 +11,9 @@ print_script_name
 #   install_rust()
 
 install_rust() {
-    
+
+    info "Current function: ${FUNCNAME[1]}"
+
     if ! command -v rustc >/dev/null 2>&1; then
         echo "Installing rust"
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh

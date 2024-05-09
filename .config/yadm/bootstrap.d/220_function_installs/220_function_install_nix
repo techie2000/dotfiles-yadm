@@ -12,6 +12,8 @@ print_script_name
 
 install_nix() {
 
+    info "Current function: ${FUNCNAME[1]}"
+
     install_nix_bin() {
         curl -L https://nixos.org/nix/install | sh
         if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
@@ -31,4 +33,3 @@ install_nix() {
         xargs nix-env -i < "$HOME/.config/nix/installed_packages.local"
     fi
 }
-

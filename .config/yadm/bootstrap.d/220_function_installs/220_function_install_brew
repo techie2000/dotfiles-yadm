@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_preferences/090_define_brew_package_list"
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   install_brew()
+function install_brew() {
+
+  info "Current function: ${FUNCNAME[1]}"
+
+  local package
+  package="brew"
+
+  info "Installing $package..."
+
+  local install
+  install="$(mktemp)"
+
+  curl -fsSLo "$install" https://raw.githubusercontent.com/Homebrew/install/master/install.sh
+  bash -- "$install" </dev/null
+
+  rm -- "$install"
+}
+
+##################################
+#   install_brew_packages()
+# Install a bunch of brew packages.
+function install_brew_packages() {
+
+  info "Current function: ${FUNCNAME[1]}"
+
+  for package in "${brew_packages_list=[@]}"; do
+
+    # Check if the binary corresponding to the package is not in the PATH and not in cargo_bin_dir
+    if ! command -v "$package" &>/dev/null; then
+
+      info "Installing $package..."
+
+      brew install "$package"
+
+    else
+      success "$package is already installed"
+    fi
+
+  done
+}

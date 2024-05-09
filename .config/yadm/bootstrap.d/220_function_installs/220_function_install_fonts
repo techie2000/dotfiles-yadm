@@ -11,6 +11,9 @@ print_script_name
 #   font_options()
 
 font_options() {
+
+    info "Current function: ${FUNCNAME[1]}"
+
     echo -e "${yellow}
   Options for font installation.${no_color}
     " >&1
@@ -24,6 +27,9 @@ font_options() {
 #   install_fonts()
 
 install_fonts() {
+
+    info "Current function: ${FUNCNAME[1]}"
+
     font_options
     while [ -z "${font_option}" ]; do
         echo -en "${white}  Option${yellow} [1/2/3]${white}: ${no_color}"

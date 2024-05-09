@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+##################################
+#   is_wsl()
+
+# check if running on a WSL environment
+is_wsl() {
+
+    info "Current function: ${FUNCNAME[1]}"
+
+  if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
+    true
+    readonly WSL=1
+  else
+    false
+    readonly WSL=0
+  fi
+}

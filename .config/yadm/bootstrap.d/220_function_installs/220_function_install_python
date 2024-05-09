@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Stop on any error
+set -o errexit
+
+source "$HOME/.config/yadm/bootstrap.d/000_preferences/090_define_python_package_list"
+source "$HOME/.config/yadm/bootstrap.d/000_core/200_functions"
+
+print_script_name
+
+##################################
+#   install_pyenv()
+# pyenv = python version manager
+function install_pyenv() {
+
+  info "Current function: ${FUNCNAME[1]}"
+
+  local package
+  package="pyenv"
+
+  if ! command -v $package > /dev/null 2>&1; then
+    info "Installing $package..."
+    local install
+    install="$(mktemp)"
+    warning "removing any remnants of previous installation versions if found"
+    rm -rf /home/dd/.pyenv
+    curl https://pyenv.run > "$install"
+    bash -- "$install" </dev/null
+    rm -- "$install"
+  else
+    success "$package is already installed"
+    info "Installing updates if available"
+    $package update
+    echo
+  fi
+}
+
+##################################
+#   install_python_packages()
+# Install a bunch of brew packages.
+function install_python_packages() {
+
+  info "Current function: ${FUNCNAME[1]}"
+
+    # Check Python version
+    if command -v python3 &> /dev/null; then
+        PIP_COMMAND="pip3"
+    elif command -v python &> /dev/null; then
+        PIP_COMMAND="pip"
+    else
+        echo "Python is not installed. Aborting."
+        return 1
+    fi
+
+    # Install packages
+    for package in "${python_packages_list=[@]}"; do
+
+      info "Installing Python packages..."
+      info "Instaling $package..."
+      $PIP_COMMAND install "$package"
+
+    done
+
+    info "Updating pip..."
+    $PIP_COMMAND install --upgrade pip
+
+    info "The following pip/python packages will be updated..."
+    pip list --outdated
+    pip list --outdated | awk '{print $1}' | tail -n +3 | xargs -n1 pip install -U
+
+
+}

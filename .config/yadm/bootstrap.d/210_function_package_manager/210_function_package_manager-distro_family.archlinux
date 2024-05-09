@@ -13,11 +13,16 @@ print_script_name
 #   pac_install()
 
 pac_install() {
+
+    info "Current function: ${FUNCNAME[1]}"
+
     print_msg "Updating package database..."
     sudo pacman -Sy
+
     # Specify Arch based distribution specific GVim package.
     vim_gui_pkg="gvim"
     install_vim
+
     print_msg "Installing package dependencies..."
     sudo pacman -S --noconfirm "${linux_pkg_list[@]}"
 }

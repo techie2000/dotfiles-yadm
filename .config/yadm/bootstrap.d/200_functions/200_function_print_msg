@@ -9,3 +9,32 @@ set -o errexit
 print_msg() {
     echo -e "${green}=>${no_color}${white}" "${@}" "${no_color}" >&1
 }
+
+##################################
+#   info()
+
+function info() {
+  tput setaf 4
+  printf "==> $@\n"
+  tput sgr0
+}
+
+##################################
+#   warning()
+
+function warning() {
+  tput setaf 3
+  tput bold
+  printf "==> $@\n"
+  tput sgr0
+  sleep 0.5
+}
+
+##################################
+#   success()
+
+function success() {
+  tput setaf 2
+  printf "==> $@\n"
+  tput sgr0
+}
